@@ -1,6 +1,6 @@
 # Rhizome Terms of Use
 
-Version 1.0 | Effective September 3, 2026
+Version 1.1 | Effective September 7, 2026
 
 These terms apply to the Rhizome desktop application. By downloading, installing, or using the app, you acknowledge and accept these terms. If you do not agree, stop using and uninstall the app.
 
@@ -10,7 +10,7 @@ Rhizome helps an individual manage long-lived accounts, keys, credential files, 
 
 ## 2. License to use
 
-Subject to these terms and applicable law, you may install and use Rhizome for personal purposes. Rights to copy, modify, or redistribute Rhizome itself are governed by any separate software license included with the release or published on the project page. Third-party components remain governed by their own open-source licenses.
+Individuals, companies, and other organizations may use Rhizome free of charge, including for work and internal business. The Rhizome No-Sale License 1.0 permits modification and free sharing; selling original or modified copies, paid use licenses, paid distribution, or charging for downloads requires written permission from the relevant rights holders. Separate installation, support, and hosting services are not prohibited merely because they are paid, but must not disguise charges for software copies, use licenses, or downloads. See the accompanying LICENSE for full conditions. Third-party components retain their own licenses.
 
 ## 3. Lawful and authorized use
 
@@ -49,4 +49,3 @@ You may stop using and uninstall the app at any time. Before uninstalling, decid
 ## 11. Applicable rules and contact
 
 These terms are subject to applicable law. If one provision is invalid, the others remain in effect. The publisher identity and contact details are provided on the official Rhizome download page.
-

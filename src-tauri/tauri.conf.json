@@ -34,6 +34,7 @@
     "targets": ["nsis", "msi"],
     "createUpdaterArtifacts": false,
     "resources": {
+      "../LICENSE": "legal/LICENSE",
       "../THIRD-PARTY-NOTICES.md": "legal/THIRD-PARTY-NOTICES.md",
       "../docs/legal/privacy-policy.zh-CN.md": "legal/privacy-policy.zh-CN.md",
       "../docs/legal/privacy-policy.en-US.md": "legal/privacy-policy.en-US.md",

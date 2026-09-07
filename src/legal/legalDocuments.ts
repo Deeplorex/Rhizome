@@ -167,7 +167,7 @@ const privacyEn: LegalDocument = {
 
 const termsZh: LegalDocument = {
   title: "用户协议",
-  version: "版本 1.0 · 生效日期：2026 年 9 月 3 日",
+  version: "版本 1.1 · 生效日期：2026 年 9 月 7 日",
   introduction:
     "本协议适用于 Rhizome 桌面应用。下载、安装或使用软件表示你理解并接受本协议；如不同意，请停止使用并卸载软件。",
   sections: [
@@ -180,7 +180,7 @@ const termsZh: LegalDocument = {
     {
       title: "2. 使用许可",
       paragraphs: [
-        "在遵守本协议和适用法律的前提下，你可以为个人用途安装和使用 Rhizome。Rhizome 本身的复制、修改与再分发权利，以发行包或项目主页另行提供的软件许可为准。第三方组件继续受各自开源许可证约束。",
+        "个人、企业及其他组织均可免费使用 Rhizome，包括工作和内部业务用途。Rhizome No-Sale License 1.0 允许修改和免费分享；未经相关权利人书面授权，不得销售原版或修改版、收费授予使用许可、收费分发或收费提供下载。独立的安装、技术支持及托管服务不因收费而被一概禁止，但不得变相收取软件副本、使用许可或下载费用。完整条件以随附 LICENSE 为准。第三方组件仍适用各自许可证。",
       ],
     },
     {
@@ -244,7 +244,7 @@ const termsZh: LegalDocument = {
 
 const termsEn: LegalDocument = {
   title: "Terms of Use",
-  version: "Version 1.0 · Effective September 3, 2026",
+  version: "Version 1.1 · Effective September 7, 2026",
   introduction:
     "These terms apply to the Rhizome desktop application. By downloading, installing, or using the app, you acknowledge and accept these terms. If you do not agree, stop using and uninstall the app.",
   sections: [
@@ -257,7 +257,7 @@ const termsEn: LegalDocument = {
     {
       title: "2. License to use",
       paragraphs: [
-        "Subject to these terms and applicable law, you may install and use Rhizome for personal purposes. Rights to copy, modify, or redistribute Rhizome itself are governed by any separate software license included with the release or published on the project page. Third-party components remain governed by their own open-source licenses.",
+        "Individuals, companies, and other organizations may use Rhizome free of charge, including for work and internal business. The Rhizome No-Sale License 1.0 permits modification and free sharing; selling original or modified copies, paid use licenses, paid distribution, or charging for downloads requires written permission from the relevant rights holders. Separate installation, support, and hosting services are not prohibited merely because they are paid, but must not disguise charges for software copies, use licenses, or downloads. See the accompanying LICENSE for full conditions. Third-party components retain their own licenses.",
       ],
     },
     {

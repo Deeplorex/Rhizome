@@ -1,0 +1,56 @@
+Rhizome No-Sale License 1.0
+Rhizome 禁止销售许可 1.0
+
+Copyright (c) 2026 Rhizome contributors.
+Each contributor retains copyright in their own contributions.
+各贡献者保留其各自贡献的著作权。
+
+中文条款
+
+1. 适用范围
+本许可适用于本仓库及发行包中由 Rhizome 权利人提供、且未另行标注许可的代码、文档和原创资源（“本软件”）。第三方组件及商标不属于本许可授权范围，其各自许可和权利声明继续有效。
+
+2. 使用授权
+在遵守本许可的前提下，授予个人、企业和其他组织免费、非独占的许可，下载、安装、运行、阅读、复制、学习、修改和备份本软件。允许个人用途、受雇工作、企业内部业务及其他商业使用，但须遵守第 4 条的销售限制。
+
+3. 免费分享
+允许免费分享本软件原版或修改版的源码及二进制文件，但必须完整保留本许可、著作权声明和适用的第三方声明；修改版须明确说明修改内容，不得声称是官方发行版。接收者须遵守同一许可。允许代码托管平台在其正常托管、展示和分发功能所需范围内处理这些副本。
+
+4. 未授权用途
+未经相关著作权人事先书面授权，不得销售本软件原版或修改版、收费授予使用许可、收费分发或收费提供下载，也不得通过捆绑销售、强制捐赠、改名或重新打包变相实施上述行为。
+独立的安装、配置、技术支持、培训、定制开发及托管服务不因收费而被一概禁止。费用必须对应实际服务，不得直接或变相收取软件副本、使用许可或下载费用；服务中分发的软件仍须遵守第 3 条。允许将本软件作为工具用于其他商业服务。
+本条不限制第三方许可证或不可排除的法律规定赋予的权利。未明确授予的权利予以保留。
+
+5. 用户数据与标识
+本许可不主张用户录入数据的所有权。除识别本软件及保留声明所必要的使用外，本许可不授予 Rhizome 或第三方名称、标志、商标的使用权，也不表示任何背书。
+
+6. 无担保与责任限制
+在适用法律允许的最大范围内，本软件按“现状”提供，不附带任何明示或默示担保，包括适销性、特定用途适用性及不侵权担保。权利人和贡献者不对因使用或无法使用本软件而产生的损失承担责任。本条不排除或限制适用法律禁止排除或限制的责任。
+
+7. 终止与文本
+违反本许可时，本许可授予的权利自动终止；你须停止使用及分发本软件，除法律另有规定外删除不再获授权的副本。用户数据不因此转移所有权。中英文如有不一致，以中文为准，但适用法律另有强制规定的除外。
+
+English terms
+
+1. Scope
+This license applies to code, documentation, and original assets supplied by Rhizome rights holders in this repository or its releases that are not separately licensed (the "Software"). Third-party components and trademarks remain subject to their own licenses and notices.
+
+2. Use grant
+Subject to this license, individuals, companies, and other organizations receive a free, non-exclusive license to download, install, run, read, copy, study, modify, and back up the Software. Personal purposes, employment-related work, internal business, and other commercial use are permitted, subject to the sales restrictions in section 4.
+
+3. Free redistribution
+Free redistribution of original or modified source code and binaries is permitted if this entire license, copyright notices, and applicable third-party notices are retained. Modified versions must identify their changes and must not be presented as official releases. Recipients must comply with the same license. Code-hosting platforms may process these copies as needed for their ordinary hosting, display, and distribution functions.
+
+4. Uses requiring separate permission
+Without prior written permission from the relevant copyright holders, you must not sell original or modified copies of the Software, charge for use licenses, redistribute for a fee, or charge for downloads. Bundled sales, mandatory donations, renaming, and repackaging must not be used to circumvent these restrictions.
+Separate installation, configuration, support, training, custom development, and hosting services are not prohibited merely because they are paid. Fees must correspond to actual services and must not directly or indirectly charge for software copies, use licenses, or downloads. Software distributed as part of a service remains subject to section 3. Using the Software as a tool for other commercial services is permitted.
+This clause does not restrict rights independently granted by third-party licenses or non-waivable law. All rights not expressly granted are reserved.
+
+5. User data and branding
+This license claims no ownership of user-entered data. Except as necessary to identify the Software and retain notices, it grants no rights to Rhizome or third-party names, logos, or trademarks and implies no endorsement.
+
+6. Disclaimer and limitation of liability
+To the maximum extent permitted by applicable law, the Software is provided "AS IS", without express or implied warranties, including merchantability, fitness for a particular purpose, or non-infringement. Rights holders and contributors are not liable for losses arising from use or inability to use the Software. Nothing excludes or limits liability that applicable law prohibits excluding or limiting.
+
+7. Termination and language
+Rights granted by this license terminate automatically upon violation. You must stop using and distributing the Software and delete unauthorized copies except where law provides otherwise. Ownership of user data is unaffected. The Chinese text controls in case of inconsistency, subject to mandatory applicable law.

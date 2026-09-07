@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Offline personal credential and dependency vault"
 authors = ["Rhizome"]
 edition = "2024"
+license-file = "../LICENSE"
 rust-version = "1.98"
 
 [lib]

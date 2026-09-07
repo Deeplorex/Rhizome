@@ -9,6 +9,17 @@ const cargoToml = await read("src-tauri/Cargo.toml");
 const notices = await read("THIRD-PARTY-NOTICES.md");
 
 const errors = [];
+const projectLicense = await read("LICENSE");
+const tauriConfig = JSON.parse(await read("src-tauri/tauri.conf.json"));
+if (!projectLicense.includes("Rhizome No-Sale License 1.0"))
+  errors.push("Missing project no-sale license");
+if (
+  packageJson.license !== "SEE LICENSE IN LICENSE" ||
+  !cargoToml.includes('license-file = "../LICENSE"')
+)
+  errors.push("Package license metadata does not reference LICENSE");
+if (tauriConfig.bundle?.resources?.["../LICENSE"] !== "legal/LICENSE")
+  errors.push("Native bundles must include the project LICENSE");
 const components = manifest.components ?? [];
 const byEcosystem = (ecosystem) =>
   new Set(components.filter((item) => item.ecosystem === ecosystem).map((item) => item.name));

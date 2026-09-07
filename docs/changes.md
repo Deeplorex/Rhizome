@@ -1,5 +1,26 @@
 # Product changes
 
+## 2026-09-07 — Third-party maintenance rules for AI contributors
+
+- Type: `maintenance`
+- Added AGENTS.md requirements to update inventories and notices with dependency/resource additions, upgrades, replacements and removals.
+- Require upstream rights and license/NOTICE preservation, shipped transitive/resource review, and disclosure of unresolved obligations.
+- Documented existing checker limitations. Contributor rules only; no application behavior changes.
+
+## 2026-09-07 — Replace personal-use restriction with no-sale terms
+
+- Type: `requirement`
+- Adopted Rhizome No-Sale License 1.0: personal, organizational and business use are allowed; sales, paid use licenses and paid downloads require written permission.
+- Separate paid services are permitted subject to anti-circumvention terms. Third-party license rights remain unchanged.
+- Updated README, bilingual terms (version 1.1) and license checks. Regression: `src/components/LegalDialog.test.tsx`.
+
+## 2026-09-07 — Project README and personal-use license
+
+- Type: `maintenance`
+- Added README with product scope, development instructions and Chinese/English licensing explanations.
+- Added bilingual Rhizome Personal Use License 1.0 for personal non-commercial use; third-party license rights remain unchanged.
+- Package metadata and future native bundles reference the project license. `scripts/legal-check.mjs` checks those references.
+
 ## 2026-09-07 — Relationships in credential forms
 
 - Type: `requirement`

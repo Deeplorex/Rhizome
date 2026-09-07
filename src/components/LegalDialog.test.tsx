@@ -7,6 +7,27 @@ describe("legal dialog", () => {
   beforeEach(() => localStorage.setItem("rhizome-language", "en-US"));
   afterEach(() => localStorage.removeItem("rhizome-language"));
 
+  it("describes business use and the no-sale restriction in both languages", () => {
+    for (const language of ["en-US", "zh-CN"]) {
+      localStorage.setItem("rhizome-language", language);
+      const { unmount } = render(
+        <I18nProvider>
+          <LegalDialog initialDocument="terms" onClose={vi.fn()} />
+        </I18nProvider>,
+      );
+      const license = screen.getByText(/Rhizome No-Sale License 1.0/);
+      expect(license).toHaveTextContent(
+        language === "en-US" ? "work and internal business" : "工作和内部业务",
+      );
+      expect(license).toHaveTextContent(
+        language === "en-US"
+          ? "charging for downloads requires written permission"
+          : "不得销售原版或修改版",
+      );
+      unmount();
+    }
+  });
+
   it("shows the English document selected by the current language", () => {
     render(
       <I18nProvider>
