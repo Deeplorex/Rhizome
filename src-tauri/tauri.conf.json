@@ -1,0 +1,59 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Rhizome 密钥库",
+  "version": "0.1.0",
+  "identifier": "app.rhizome.vault",
+  "build": {
+    "beforeDevCommand": "corepack pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "corepack pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Rhizome",
+        "width": 1440,
+        "height": 920,
+        "minWidth": 900,
+        "minHeight": 640,
+        "center": true,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": true,
+        "transparent": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src ipc: http://ipc.localhost; img-src 'self' asset: data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'",
+      "capabilities": ["default"]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "msi"],
+    "createUpdaterArtifacts": false,
+    "resources": {
+      "../THIRD-PARTY-NOTICES.md": "legal/THIRD-PARTY-NOTICES.md",
+      "../docs/legal/privacy-policy.zh-CN.md": "legal/privacy-policy.zh-CN.md",
+      "../docs/legal/privacy-policy.en-US.md": "legal/privacy-policy.en-US.md",
+      "../docs/legal/terms-of-use.zh-CN.md": "legal/terms-of-use.zh-CN.md",
+      "../docs/legal/terms-of-use.en-US.md": "legal/terms-of-use.en-US.md"
+    },
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "skip"
+      },
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
+  }
+}

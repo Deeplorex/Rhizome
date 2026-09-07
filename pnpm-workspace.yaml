@@ -1,0 +1,7 @@
+packages:
+  - .
+storeDir: D:/DevTools/pnpm-store
+strictPeerDependencies: true
+saveExact: true
+allowBuilds:
+  esbuild: true

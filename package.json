@@ -1,0 +1,62 @@
+{
+  "name": "rhizome-vault",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Offline personal credential and dependency vault",
+  "type": "module",
+  "packageManager": "pnpm@11.24.0",
+  "engines": {
+    "node": "24.18.0",
+    "pnpm": "11.24.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "tauri": "tauri",
+    "build": "tsc -b && vite build",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "typecheck": "tsc -b --pretty false",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:rust": "cargo test --manifest-path src-tauri/Cargo.toml",
+    "format:rust:check": "cargo fmt --manifest-path src-tauri/Cargo.toml -- --check",
+    "lint:rust": "cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings",
+    "build:rust:check": "cargo check --manifest-path src-tauri/Cargo.toml",
+    "contract:check": "node scripts/contract-check.mjs",
+    "legal:check": "node scripts/legal-check.mjs",
+    "migration:check": "cargo test --manifest-path src-tauri/Cargo.toml migration_tests",
+    "change:check": "node scripts/change-check.mjs",
+    "quality:fast": "corepack pnpm lint && corepack pnpm typecheck && corepack pnpm test",
+    "quality": "corepack pnpm format:check && corepack pnpm lint && corepack pnpm typecheck && corepack pnpm test && corepack pnpm format:rust:check && corepack pnpm lint:rust && corepack pnpm test:rust && corepack pnpm contract:check && corepack pnpm legal:check && corepack pnpm migration:check && corepack pnpm build:rust:check && corepack pnpm build",
+    "quality:full": "corepack pnpm quality && corepack pnpm security:audit && corepack pnpm deploy:preflight",
+    "security:audit": "corepack pnpm audit --prod --registry=https://registry.npmjs.org/ && cargo audit --file src-tauri/Cargo.lock",
+    "deploy:preflight": "corepack pnpm quality && corepack pnpm tauri build --debug --no-bundle",
+    "deploy:smoke": "node scripts/smoke-check.mjs"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "2.11.1",
+    "@tauri-apps/plugin-dialog": "2.7.3",
+    "@xyflow/react": "12.11.5",
+    "lucide-react": "0.544.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "simple-icons": "16.29.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.4",
+    "@tauri-apps/cli": "2.11.4",
+    "@testing-library/jest-dom": "6.8.0",
+    "@testing-library/react": "16.3.0",
+    "@testing-library/user-event": "14.6.1",
+    "@types/node": "24.3.0",
+    "@types/react": "19.1.12",
+    "@types/react-dom": "19.1.9",
+    "@vitejs/plugin-react": "6.1.1",
+    "jsdom": "26.1.0",
+    "typescript": "7.0.2",
+    "vite": "8.2.2",
+    "vitest": "4.1.11"
+  }
+}

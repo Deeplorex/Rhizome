@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "1.8.1",
+  "project": {
+    "name": "rhizome",
+    "displayName": "Rhizome 密钥库",
+    "packageScope": "rhizome",
+    "description": "A fully offline personal vault for long-lived credentials, key files, products, and dependency topology."
+  },
+  "product": {
+    "phase": "v1-local-desktop",
+    "sourceOfTruth": "docs/product/README.md",
+    "locales": ["zh-CN"],
+    "defaultLocale": "zh-CN",
+    "users": "single-personal-user",
+    "offlineOnly": true
+  },
+  "architecture": {
+    "selectionStatus": "selected",
+    "selectionMode": "user-approved",
+    "selectedOption": "modular-desktop-monolith",
+    "consideredOptions": [
+      {
+        "id": "tauri-desktop",
+        "selected": true,
+        "reason": "Small native shell, Rust security boundary, Windows-first with a macOS path."
+      },
+      {
+        "id": "electron-desktop",
+        "selected": false,
+        "reason": "Larger runtime and memory footprint with no product benefit for this local-only scope."
+      },
+      {
+        "id": "local-web-server",
+        "selected": false,
+        "reason": "Adds a network/process boundary that conflicts with the pure desktop goal."
+      }
+    ]
+  },
+  "runtime": {
+    "node": "24.18.0",
+    "pnpm": "11.24.0",
+    "rust": "1.98.0"
+  },
+  "application": {
+    "frontend": {
+      "framework": "React",
+      "version": "19.2.8",
+      "language": "TypeScript 7.0.2",
+      "build": "Vite 8.2.2 + @vitejs/plugin-react 6.1.1"
+    },
+    "desktop": {
+      "framework": "Tauri 2",
+      "rustCrate": "2.11.5",
+      "cli": "2.11.4",
+      "api": "2.11.1"
+    },
+    "units": [
+      {
+        "name": "rhizome-desktop",
+        "boundary": "React UI plus local Rust command core",
+        "deployable": true
+      }
+    ]
+  },
+  "data": {
+    "primary": "SQLCipher 4.18.0 via rusqlite",
+    "attachments": "encrypted SQLite BLOB",
+    "search": "SQLite FTS5 inside the encrypted database",
+    "migrations": "embedded ordered SQL migrations"
+  },
+  "security": {
+    "authentication": "master-password plus recovery-key envelopes and optional OS quick unlock",
+    "keyDerivation": "Argon2id",
+    "keyWrapping": "XChaCha20-Poly1305",
+    "network": "disabled",
+    "telemetry": "disabled"
+  },
+  "deployment": {
+    "selectionStatus": "selected",
+    "mode": "native-installer",
+    "environments": ["local-development", "unsigned-windows-package", "native-macos-package"],
+    "firstTarget": "Windows x86_64 unsigned installer"
+  },
+  "quality": {
+    "unit": "enabled",
+    "integration": "enabled-for-encrypted-storage-and-backup",
+    "e2e": "deferred-until-native-smoke-harness",
+    "crossBrowser": "not-applicable",
+    "accessibility": "enabled-for-primary-ui",
+    "visual": "manual-light-and-dark-review"
+  },
+  "decisions": [
+    {
+      "id": "ADR-001",
+      "status": "accepted",
+      "classification": "user-selected",
+      "decision": "Use a single Tauri 2 desktop application with no server or cloud dependency.",
+      "reason": "The application is a personal offline vault and does not need distributed operations.",
+      "revisitWhen": "The user explicitly requests synchronization or another client platform."
+    },
+    {
+      "id": "ADR-002",
+      "status": "accepted",
+      "classification": "user-selected",
+      "decision": "Allow only encrypted backups restored with the master password or recovery key.",
+      "reason": "Plaintext and passwordless exports conflict with the selected at-rest security boundary.",
+      "revisitWhen": "The user explicitly accepts the data-exposure risk of a plaintext export."
+    },
+    {
+      "id": "ADR-003",
+      "status": "accepted",
+      "classification": "user-selected",
+      "decision": "Install Rust and package caches on drive D and keep Tauri CLI project-local.",
+      "reason": "The user requested D-drive tooling and the workspace is also on D.",
+      "revisitWhen": "The workstation storage layout changes."
+    }
+  ]
+}

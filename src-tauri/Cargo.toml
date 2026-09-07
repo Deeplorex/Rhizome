@@ -1,0 +1,52 @@
+[package]
+name = "rhizome"
+version = "0.1.0"
+description = "Offline personal credential and dependency vault"
+authors = ["Rhizome"]
+edition = "2024"
+rust-version = "1.98"
+
+[lib]
+name = "rhizome_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.5", features = [] }
+
+[dependencies]
+arboard = "3.6"
+argon2 = "0.5"
+base64 = "0.22"
+chacha20poly1305 = "0.10"
+chrono = { version = "0.4", features = ["serde"] }
+getrandom = "0.3"
+hex = "0.4"
+parking_lot = "0.12"
+rusqlite = { version = "0.40", features = ["backup", "bundled-sqlcipher-vendored-openssl", "chrono", "serde_json", "uuid"] }
+secrecy = "0.10"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+tauri = { version = "2.11.5", features = ["tray-icon"] }
+tauri-plugin-dialog = "2.4"
+thiserror = "2"
+uuid = { version = "1", features = ["v4", "serde"] }
+zeroize = { version = "1.8", features = ["derive"] }
+zip = { version = "4.6", default-features = false, features = ["deflate"] }
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62", features = [
+  "Foundation",
+  "Security_Credentials_UI",
+  "Win32_Foundation",
+  "Win32_Security_Cryptography",
+  "Win32_Storage_FileSystem",
+  "Win32_System_Memory",
+  "Win32_System_Threading",
+  "Win32_System_WinRT",
+  "Win32_UI_WindowsAndMessaging"
+] }
+windows-future = "0.3.2"
+
+[dev-dependencies]
+tempfile = "3"
