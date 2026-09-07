@@ -25,6 +25,37 @@
   --minimap-mask: rgba(247, 245, 238, 0.7);
 }
 
+.editor-links {
+  margin-block: 24px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.editor-links > summary {
+  cursor: pointer;
+  padding: 16px;
+  font-weight: 600;
+}
+.editor-links__body {
+  border: 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0 16px 16px;
+  display: grid;
+  gap: 16px;
+}
+.editor-links__row {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.editor-links__row p {
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+
 :root[data-theme="dark"] {
   color: #e8e7df;
   background: #111815;

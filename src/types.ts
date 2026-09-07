@@ -33,6 +33,7 @@ export interface SecretFieldView {
 }
 
 export interface AssetInput {
+  links?: AssetLinksInput;
   id?: string | null;
   kind: AssetKind;
   title: string;
@@ -46,6 +47,11 @@ export interface AssetInput {
   folderId?: string | null;
   tags: string[];
   fields: SecretFieldInput[];
+}
+
+export interface AssetLinksInput {
+  relations: AssetRelationInput[];
+  bindings: UsageBindingInput[];
 }
 
 export interface AssetSummary {

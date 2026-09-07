@@ -1,5 +1,12 @@
 # Product changes
 
+## 2026-09-07 — Relationships in credential forms
+
+- Type: `requirement`
+- Added optional, searchable credential relationships and product/composition/environment usage locations to new and edit forms; moved the parent selector into this section.
+- Existing relationships load for editing. Cancel discards changes. A single database transaction saves the credential and relationships, retaining IDs and verification metadata for unchanged links.
+- Tests: `src/components/AssetLinksEditor.test.tsx`, `src-tauri/src/storage.rs` cover form drafts, direction, atomic rollback, removal and retained relationships.
+
 ## 2026-09-07 — Silent relocking
 
 - Type: `bug`

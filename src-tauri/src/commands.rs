@@ -107,8 +107,12 @@ pub async fn get_asset_for_edit(
 pub async fn save_asset(
     state: State<'_, AppState>,
     input: AssetInput,
+    links: Option<crate::models::AssetLinksInput>,
 ) -> CommandResult<AssetDetail> {
-    command(state.with_session_mut(|session| storage::save_asset(&mut session.connection, input)))
+    command(state.with_session_mut(|session| match links {
+        Some(links) => storage::save_asset_with_links(&mut session.connection, input, Some(links)),
+        None => storage::save_asset(&mut session.connection, input),
+    }))
 }
 
 #[tauri::command]

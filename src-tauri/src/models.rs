@@ -91,6 +91,13 @@ pub struct AssetInput {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct AssetLinksInput {
+    pub relations: Vec<AssetRelationInput>,
+    pub bindings: Vec<UsageBindingInput>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AssetSummary {
     pub id: String,
     pub kind: AssetKind,

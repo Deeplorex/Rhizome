@@ -293,7 +293,14 @@ export default function App() {
       input.id ? t("凭证已更新") : t("凭证已保存"),
     );
 
-  const editAsset = async (id: string) => run(async () => setEditor(await api.getAssetForEdit(id)));
+  const editAsset = async (id: string) =>
+    run(async () => {
+      const [input, detail] = await Promise.all([api.getAssetForEdit(id), api.getAsset(id)]);
+      setEditor({
+        ...input,
+        links: { relations: detail.assetRelations, bindings: detail.bindings },
+      });
+    });
   const mutateAsset = async (operation: () => Promise<void>, message: string) =>
     run(async () => {
       await operation();
@@ -591,6 +598,7 @@ export default function App() {
       {editor !== false && (
         <AssetEditor
           initial={editor}
+          projects={projects}
           assets={assetsIndex}
           folders={folders}
           onCancel={() => setEditor(false)}

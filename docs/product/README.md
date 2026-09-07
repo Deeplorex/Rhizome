@@ -4,6 +4,8 @@ Rhizome is a single-user desktop vault for long-lived, manually maintained crede
 
 ## Now
 
+- New and edit credential forms include optional searchable credential relationships and product/composition/environment usage locations. Parent credentials live in the same section. Cancel discards drafts; the credential and its relationships save in one database transaction.
+
 - Web accounts, API credentials, servers, databases, recovery credentials, and encrypted key files. Each type provides a concise, fixed standard field set plus optional user-defined fields. Server records use dedicated password-login or SSH-key-login fields rather than storing both credential methods together.
 - Usernames used by the asset list and local search are derived from standard username fields rather than entered as duplicate index metadata. Environment metadata applies only to API credentials, servers, and databases.
 - The platform field provides an offline, type-specific catalog of common Chinese and international platforms, normalizes recognized aliases, and still accepts custom values.

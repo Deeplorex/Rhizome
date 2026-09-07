@@ -1,6 +1,7 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import { Eye, EyeOff, Plus, Star, Trash2, X } from "lucide-react";
-import { type FormEvent, useEffect, useId, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useId, useState } from "react";
+import { AssetLinksEditor } from "./AssetLinksEditor";
 import {
   emptyAsset,
   FIELD_TEMPLATES,
@@ -14,9 +15,17 @@ import {
 } from "../lib/assetTemplates";
 import { normalizePlatformName, platformOptionsFor } from "../lib/platformCatalog";
 import { useI18n } from "../lib/i18n";
-import type { AssetInput, AssetKind, AssetSummary, Folder, SecretFieldInput } from "../types";
+import type {
+  AssetInput,
+  AssetKind,
+  AssetSummary,
+  Folder,
+  SecretFieldInput,
+  Project,
+} from "../types";
 
 interface AssetEditorProps {
+  projects?: Project[];
   initial?: AssetInput | null;
   assets: AssetSummary[];
   folders: Folder[];
@@ -110,7 +119,14 @@ const FIELD_PLACEHOLDERS: Record<string, string> = {
   purpose: "用途",
 };
 
-export function AssetEditor({ initial, assets, folders, onCancel, onSave }: AssetEditorProps) {
+export function AssetEditor({
+  initial,
+  assets,
+  folders,
+  projects = [],
+  onCancel,
+  onSave,
+}: AssetEditorProps) {
   const { t } = useI18n();
   const titleId = useId();
   const [draft, setDraft] = useState<AssetInput>(() => initial || emptyAsset());
@@ -136,10 +152,6 @@ export function AssetEditor({ initial, assets, folders, onCancel, onSave }: Asse
   const customFields = draft.fields
     .map((item, index) => ({ item, index }))
     .filter(({ item }) => !standardFieldKeys.has(item.key));
-  const parentOptions = useMemo(
-    () => assets.filter((asset) => asset.id !== draft.id && !asset.deletedAt),
-    [assets, draft.id],
-  );
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -212,7 +224,22 @@ export function AssetEditor({ initial, assets, folders, onCancel, onSave }: Asse
         tags: prepared.tags.filter(Boolean),
       };
       if (draft.kind === "secret_file" && sourcePath) {
-        await onSave(input, sourcePath, (id) => setDraft((current) => ({ ...current, id })));
+        await onSave(input, sourcePath, (id) =>
+          setDraft((current) => ({
+            ...current,
+            id,
+            links: current.links
+              ? {
+                  relations: current.links.relations.map((relation) => ({
+                    ...relation,
+                    sourceAssetId: relation.sourceAssetId || id,
+                    targetAssetId: relation.targetAssetId || id,
+                  })),
+                  bindings: current.links.bindings.map((binding) => ({ ...binding, assetId: id })),
+                }
+              : undefined,
+          })),
+        );
       } else {
         await onSave(input);
       }
@@ -321,21 +348,6 @@ export function AssetEditor({ initial, assets, folders, onCancel, onSave }: Asse
                   value={draft.expiresAt?.slice(0, 10) || ""}
                   onChange={(event) => update("expiresAt", event.target.value || null)}
                 />
-              </label>
-              <label>
-                <span>{t("上级账号 / 凭证")}</span>
-                <select
-                  value={draft.parentAssetId || ""}
-                  name="asset-parent"
-                  onChange={(event) => update("parentAssetId", event.target.value || null)}
-                >
-                  <option value="">{t("无")}</option>
-                  {parentOptions.map((asset) => (
-                    <option key={asset.id} value={asset.id}>
-                      {asset.title}
-                    </option>
-                  ))}
-                </select>
               </label>
               <label>
                 <span>{t("文件夹")}</span>
@@ -752,6 +764,13 @@ export function AssetEditor({ initial, assets, folders, onCancel, onSave }: Asse
               </>
             )}
 
+            <AssetLinksEditor
+              draft={draft}
+              assets={assets}
+              projects={projects}
+              disabled={saving}
+              onChange={(next) => setDraft((current) => ({ ...current, ...next }))}
+            />
             <label className="field-group">
               <span>{t("备注")}</span>
               <textarea

@@ -324,7 +324,15 @@ fn sync_search(transaction: &Transaction<'_>, input: &AssetInput, asset_id: &str
     Ok(())
 }
 
-pub fn save_asset(connection: &mut Connection, mut input: AssetInput) -> AppResult<AssetDetail> {
+pub fn save_asset(connection: &mut Connection, input: AssetInput) -> AppResult<AssetDetail> {
+    save_asset_with_links(connection, input, None)
+}
+
+pub fn save_asset_with_links(
+    connection: &mut Connection,
+    mut input: AssetInput,
+    links: Option<crate::models::AssetLinksInput>,
+) -> AppResult<AssetDetail> {
     validate_asset(&input)?;
     let now = Utc::now().to_rfc3339();
     let id = input
@@ -353,6 +361,38 @@ pub fn save_asset(connection: &mut Connection, mut input: AssetInput) -> AppResu
     }
     sync_tags(&transaction, &id, &input.tags)?;
     sync_search(&transaction, &input, &id)?;
+    if let Some(links) = links {
+        let previous_relations = asset_relations_for_asset(&transaction, &id)?;
+        let previous_bindings = bindings_for_asset(&transaction, &id)?;
+        let mut retained = std::collections::HashSet::new();
+        for mut relation in links.relations {
+            if relation.source_asset_id.is_empty() {
+                relation.source_asset_id = id.clone();
+            }
+            if relation.target_asset_id.is_empty() {
+                relation.target_asset_id = id.clone();
+            }
+            if relation.source_asset_id != id && relation.target_asset_id != id {
+                return Err(AppError::Validation("关联必须包含当前凭证".into()));
+            }
+            retained.insert(save_asset_relation(&transaction, relation)?.id);
+        }
+        for relation in previous_relations {
+            if !retained.contains(&relation.id) {
+                delete_asset_relation(&transaction, &relation.id)?;
+            }
+        }
+        retained.clear();
+        for mut binding in links.bindings {
+            binding.asset_id = id.clone();
+            retained.insert(save_binding(&transaction, binding)?.id);
+        }
+        for binding in previous_bindings {
+            if !retained.contains(&binding.id) {
+                delete_binding(&transaction, &binding.id)?;
+            }
+        }
+    }
     transaction.commit()?;
     get_asset(connection, &id)
 }
@@ -633,7 +673,9 @@ pub fn save_binding(connection: &Connection, input: UsageBindingInput) -> AppRes
     bindings_for_asset(connection, &input.asset_id)?
         .into_iter()
         .find(|binding| {
-            binding.consumer_id == input.consumer_id && binding.purpose == input.purpose
+            binding.consumer_id == input.consumer_id
+                && binding.purpose == input.purpose
+                && binding.consumer_kind.as_str() == input.consumer_kind.as_str()
         })
         .ok_or(AppError::NotFound)
 }
@@ -1129,6 +1171,102 @@ mod migration_tests {
                 .iter()
                 .all(|field| field.value != "test-secret")
         );
+    }
+
+    #[test]
+    fn editor_links_save_atomically_and_preserve_unchanged_metadata() {
+        use crate::models::AssetLinksInput;
+        let directory = tempfile::tempdir().unwrap();
+        let mut connection =
+            initialize_database(&directory.path().join("vault.db"), &[7_u8; 32], "links").unwrap();
+        let input: AssetInput = serde_json::from_value(serde_json::json!({
+            "kind": "web_account", "title": "Email"
+        }))
+        .unwrap();
+        let email = save_asset(&mut connection, input.clone()).unwrap();
+        let project = save_project(
+            &connection,
+            ProjectInput {
+                id: None,
+                name: "AAA".into(),
+                description: "".into(),
+                repo_path: "".into(),
+                favorite: false,
+            },
+        )
+        .unwrap();
+        let links = AssetLinksInput {
+            relations: vec![AssetRelationInput {
+                source_asset_id: email.summary.id.clone(),
+                target_asset_id: "".into(),
+                relation_type: AssetRelationType::UsedToRegister,
+                notes: "".into(),
+            }],
+            bindings: vec![UsageBindingInput {
+                asset_id: "".into(),
+                consumer_kind: ConsumerKind::Project,
+                consumer_id: project.id,
+                purpose: "registration".into(),
+                config_key: "".into(),
+                environment: "".into(),
+                notes: "".into(),
+            }],
+        };
+        let mut invalid = links.clone();
+        invalid.bindings[0].consumer_id = "missing".into();
+        assert!(save_asset_with_links(&mut connection, input.clone(), Some(invalid)).is_err());
+        assert_eq!(
+            list_assets(&connection, &AssetFilter::default())
+                .unwrap()
+                .len(),
+            1
+        );
+        assert!(
+            get_asset(&connection, &email.summary.id)
+                .unwrap()
+                .asset_relations
+                .is_empty()
+        );
+        let saved = save_asset_with_links(&mut connection, input, Some(links.clone())).unwrap();
+        assert_eq!(saved.asset_relations.len(), 1);
+        assert_eq!(saved.bindings.len(), 1);
+        connection
+            .execute(
+                "UPDATE usage_bindings SET last_verified_at='verified' WHERE id=?1",
+                [&saved.bindings[0].id],
+            )
+            .unwrap();
+        let mut edit = get_asset_for_edit(&connection, &saved.summary.id).unwrap();
+        let retained =
+            save_asset_with_links(&mut connection, edit.clone(), Some(links.clone())).unwrap();
+        assert_eq!(retained.bindings[0].id, saved.bindings[0].id);
+        assert_eq!(
+            retained.bindings[0].last_verified_at.as_deref(),
+            Some("verified")
+        );
+        assert_eq!(retained.asset_relations[0].id, saved.asset_relations[0].id);
+        edit.title = "Must roll back".into();
+        let mut invalid = links;
+        invalid.bindings[0].consumer_id = "missing".into();
+        assert!(save_asset_with_links(&mut connection, edit.clone(), Some(invalid)).is_err());
+        assert_eq!(
+            get_asset(&connection, &saved.summary.id)
+                .unwrap()
+                .summary
+                .title,
+            saved.summary.title
+        );
+        let cleared = save_asset_with_links(
+            &mut connection,
+            edit,
+            Some(AssetLinksInput {
+                relations: vec![],
+                bindings: vec![],
+            }),
+        )
+        .unwrap();
+        assert!(cleared.bindings.is_empty());
+        assert!(cleared.asset_relations.is_empty());
     }
 
     #[test]

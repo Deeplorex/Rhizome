@@ -50,7 +50,8 @@ const tauriApi = {
   listAssets: (filter: AssetQuery) => invoke<AssetSummary[]>("list_assets", { filter }),
   getAsset: (assetId: string) => invoke<AssetDetail>("get_asset", { assetId }),
   getAssetForEdit: (assetId: string) => invoke<AssetInput>("get_asset_for_edit", { assetId }),
-  saveAsset: (input: AssetInput) => invoke<AssetDetail>("save_asset", { input }),
+  saveAsset: ({ links, ...input }: AssetInput) =>
+    invoke<AssetDetail>("save_asset", { input, links: links ?? null }),
   listFolders: () => invoke<Folder[]>("list_folders"),
   saveFolder: (input: FolderInput) => invoke<Folder>("save_folder", { input }),
   deleteFolder: (folderId: string) => invoke<void>("delete_folder", { folderId }),

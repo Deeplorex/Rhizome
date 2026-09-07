@@ -392,8 +392,63 @@ export function createDemoApi() {
         deletedAt: null,
       };
       const index = assets.findIndex((asset) => asset.id === saved.id);
+      const nextRelations = input.links?.relations.map((relation) => {
+        const sourceAssetId = relation.sourceAssetId || saved.id;
+        const targetAssetId = relation.targetAssetId || saved.id;
+        const sourceTitle =
+          sourceAssetId === saved.id
+            ? saved.title
+            : assets.find((asset) => asset.id === sourceAssetId)?.title;
+        const targetTitle =
+          targetAssetId === saved.id
+            ? saved.title
+            : assets.find((asset) => asset.id === targetAssetId)?.title;
+        if (
+          !sourceTitle ||
+          !targetTitle ||
+          sourceAssetId === targetAssetId ||
+          (sourceAssetId !== saved.id && targetAssetId !== saved.id)
+        )
+          throw new Error("无效的凭证关联");
+        return {
+          ...relation,
+          id: nextId("relation"),
+          sourceAssetId,
+          targetAssetId,
+          sourceTitle,
+          targetTitle,
+        };
+      });
+      const nextBindings = input.links?.bindings.map((binding) => {
+        const targets =
+          binding.consumerKind === "project"
+            ? projects
+            : binding.consumerKind === "service"
+              ? services
+              : environments;
+        const consumerName = targets.find((target) => target.id === binding.consumerId)?.name;
+        if (!consumerName) throw new Error("无效的使用位置");
+        return {
+          ...binding,
+          id: nextId("binding"),
+          assetId: saved.id,
+          assetTitle: saved.title,
+          consumerName,
+          lastVerifiedAt: null,
+        };
+      });
       if (index >= 0) assets[index] = saved;
       else assets = [saved, ...assets];
+      if (nextRelations)
+        assetRelations = [
+          ...assetRelations.filter(
+            (relation) =>
+              relation.sourceAssetId !== saved.id && relation.targetAssetId !== saved.id,
+          ),
+          ...nextRelations,
+        ];
+      if (nextBindings)
+        bindings = [...bindings.filter((binding) => binding.assetId !== saved.id), ...nextBindings];
       return clone(detail(saved.id));
     },
     listFolders: async () => clone(folders),
