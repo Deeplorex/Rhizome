@@ -63,7 +63,7 @@
     ]
   },
   "data": {
-    "primary": "SQLCipher 4.18.0 via rusqlite",
+    "primary": "SQLCipher 4.14.0 via rusqlite",
     "attachments": "encrypted SQLite BLOB",
     "search": "SQLite FTS5 inside the encrypted database",
     "migrations": "embedded ordered SQL migrations"

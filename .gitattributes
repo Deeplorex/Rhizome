@@ -1,0 +1,4 @@
+# Preserve upstream license/source evidence byte-for-byte across checkouts.
+docs/legal/licenses/** -text
+docs/legal/upstream/** -text
+docs/legal/sources/** -text

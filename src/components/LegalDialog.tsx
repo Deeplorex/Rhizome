@@ -21,6 +21,23 @@ export function LegalDialog({ initialDocument = "privacy", onClose }: LegalDialo
   const { language, t } = useI18n();
   const titleId = useId();
   const [activeDocument, setActiveDocument] = useState<LegalDocumentId>(initialDocument);
+  const [licenseText, setLicenseText] = useState<Record<
+    string,
+    { name: string; text: string }[]
+  > | null>(null);
+  const [selectedLicense, setSelectedLicense] = useState("");
+  const [licenseError, setLicenseError] = useState(false);
+  const showLicense = async (id: string) => {
+    setSelectedLicense(id);
+    setLicenseError(false);
+    if (!licenseText) {
+      try {
+        setLicenseText((await import("../legal/third-party-license-texts.json")).default);
+      } catch {
+        setLicenseError(true);
+      }
+    }
+  };
   const legalDocument =
     activeDocument === "open-source" ? null : getLegalDocument(activeDocument, language);
   const componentGroups = useMemo(
@@ -132,10 +149,34 @@ export function LegalDialog({ initialDocument = "privacy", onClose }: LegalDialo
                   </div>
                   <div className="open-source-list">
                     {components.map((component) => (
-                      <div className="open-source-row" key={`${ecosystem}-${component.name}`}>
+                      <div className="open-source-row" key={component.id}>
                         <strong>{component.name}</strong>
                         <span>{component.version}</span>
                         <code>{component.license}</code>
+                        <button
+                          type="button"
+                          className="text-button"
+                          onClick={() => void showLicense(component.id)}
+                          aria-label={`${t("查看许可原文")} ${component.name} ${component.version}`}
+                        >
+                          {t("查看许可原文")}
+                        </button>
+                        {selectedLicense === component.id && (
+                          <div className="license-original">
+                            {licenseError ? (
+                              <p role="alert">{t("许可文本加载失败，请重试。")}</p>
+                            ) : !licenseText ? (
+                              <p>{t("正在加载…")}</p>
+                            ) : (
+                              licenseText[component.id]?.map((file, index) => (
+                                <details key={`${file.name}-${index}`} open={index === 0}>
+                                  <summary>{file.name}</summary>
+                                  <pre>{file.text}</pre>
+                                </details>
+                              ))
+                            )}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

@@ -1,5 +1,13 @@
 # Product changes
 
+## 2026-09-08 — Offline transitive license evidence
+
+- Type: requirement
+- Collect the Windows npm/Cargo dependency graphs, version-pinned upstream license/NOTICE texts, native and installer notices, and MPL/installer source archives. Correct the SQLCipher inventory to the shipped 4.14.0 source.
+- Add lazy offline license-text viewing and bundle the original files and source archives. Extend legal checks to detect stale lockfiles, missing or modified texts and source archives.
+- Record the unverified internal dependency versions of the prebuilt NSIS utility plugin as a remaining release gate; do not claim complete compliance.
+- Tests: LegalDialog original-text display and scripts/legal-evidence.node-test.mjs integrity regressions.
+
 ## 2026-09-08 — Chinese MSI packaging
 
 - Type: bugfix

@@ -1,0 +1,8 @@
+[
+  {
+    "component": "native/nsis-tauri-utils@0.5.3",
+    "reason": "The upstream prebuilt NSIS plugin has no published Cargo.lock/SBOM; exact internal dependency versions are unverified.",
+    "resolution": "Obtain the upstream build lock/SBOM or use a reviewed reproducible build with a locked dependency inventory.",
+    "evidence": "docs/legal/sources/nsis-tauri-utils-0.5.3.tar.gz"
+  }
+]

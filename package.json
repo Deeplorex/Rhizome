@@ -34,7 +34,9 @@
     "quality:full": "corepack pnpm quality && corepack pnpm security:audit && corepack pnpm deploy:preflight",
     "security:audit": "corepack pnpm audit --prod --registry=https://registry.npmjs.org/ && cargo audit --file src-tauri/Cargo.lock",
     "deploy:preflight": "corepack pnpm quality && corepack pnpm tauri build --debug --no-bundle",
-    "deploy:smoke": "node scripts/smoke-check.mjs"
+    "deploy:smoke": "node scripts/smoke-check.mjs",
+    "legal:collect": "node scripts/collect-licenses.mjs",
+    "legal:release:check": "node scripts/legal-check.mjs --release"
   },
   "dependencies": {
     "@tauri-apps/api": "2.11.1",

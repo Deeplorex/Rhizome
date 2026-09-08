@@ -39,7 +39,10 @@
       "../docs/legal/privacy-policy.zh-CN.md": "legal/privacy-policy.zh-CN.md",
       "../docs/legal/privacy-policy.en-US.md": "legal/privacy-policy.en-US.md",
       "../docs/legal/terms-of-use.zh-CN.md": "legal/terms-of-use.zh-CN.md",
-      "../docs/legal/terms-of-use.en-US.md": "legal/terms-of-use.en-US.md"
+      "../docs/legal/terms-of-use.en-US.md": "legal/terms-of-use.en-US.md",
+      "../docs/legal/licenses/": "legal/licenses/",
+      "../docs/legal/sources/": "legal/sources/",
+      "../docs/legal/release-license-review.md": "legal/release-license-review.md"
     },
     "icon": [
       "icons/32x32.png",

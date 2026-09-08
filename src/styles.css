@@ -4543,3 +4543,16 @@ button {
   flex: 1;
   min-width: 180px;
 }
+
+.license-original {
+  grid-column: 1 / -1;
+  min-width: 0;
+  width: 100%;
+}
+.license-original pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 420px;
+  overflow: auto;
+  font-size: 12px;
+}

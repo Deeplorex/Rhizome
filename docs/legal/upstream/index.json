@@ -1,0 +1,194 @@
+[
+  {
+    "name": "alloc-stdlib",
+    "version": "0.2.4",
+    "repo": "https://github.com/dropbox/rust-alloc-no-stdlib",
+    "sha": "ae42d22078b98549e987d2f03d12df7b984fde47",
+    "sub": "alloc-stdlib",
+    "files": [
+      {
+        "path": "docs/legal/upstream/alloc-stdlib-0.2.4/LICENSE",
+        "source": "https://raw.githubusercontent.com/dropbox/rust-alloc-no-stdlib/ae42d22078b98549e987d2f03d12df7b984fde47/LICENSE"
+      }
+    ]
+  },
+  {
+    "name": "clipboard-win",
+    "version": "5.4.1",
+    "repo": "https://github.com/DoumanAsh/clipboard-win",
+    "sha": "3b27cf2bfd1adcfa6e0264eb51c1025ddaf0f342",
+    "sub": "",
+    "files": [
+      {
+        "path": "docs/legal/upstream/clipboard-win-5.4.1/LICENSE",
+        "source": "https://raw.githubusercontent.com/DoumanAsh/clipboard-win/3b27cf2bfd1adcfa6e0264eb51c1025ddaf0f342/LICENSE"
+      }
+    ]
+  },
+  {
+    "name": "defmt-parser",
+    "version": "1.0.0",
+    "repo": "https://github.com/knurling-rs/defmt",
+    "sha": "4a8cdb44891ed57b8ff5a023b6bec7137c48708f",
+    "sub": "parser",
+    "files": [
+      {
+        "path": "docs/legal/upstream/defmt-parser-1.0.0/LICENSE-APACHE",
+        "source": "https://raw.githubusercontent.com/knurling-rs/defmt/4a8cdb44891ed57b8ff5a023b6bec7137c48708f/LICENSE-APACHE"
+      },
+      {
+        "path": "docs/legal/upstream/defmt-parser-1.0.0/LICENSE-MIT",
+        "source": "https://raw.githubusercontent.com/knurling-rs/defmt/4a8cdb44891ed57b8ff5a023b6bec7137c48708f/LICENSE-MIT"
+      }
+    ]
+  },
+  {
+    "name": "selectors",
+    "version": "0.36.1",
+    "repo": "https://github.com/servo/stylo",
+    "sha": "635e1a19d02960588a00e189bd4bd5bdb150ec3d",
+    "sub": "selectors",
+    "files": [
+      {
+        "path": "docs/legal/upstream/selectors-0.36.1/LICENSE-MPL-2.0",
+        "source": "https://www.mozilla.org/media/MPL/2.0/index.txt"
+      }
+    ]
+  },
+  {
+    "name": "tauri-plugin",
+    "version": "2.6.3",
+    "repo": "https://github.com/tauri-apps/tauri",
+    "sha": "6f6ab1207bb3923c2721fbc67d2fdb1c8deb0c7a",
+    "sub": "crates/tauri-plugin",
+    "files": [
+      {
+        "path": "docs/legal/upstream/tauri-plugin-2.6.3/LICENSE_APACHE-2.0",
+        "source": "https://raw.githubusercontent.com/tauri-apps/tauri/6f6ab1207bb3923c2721fbc67d2fdb1c8deb0c7a/LICENSE_APACHE-2.0"
+      },
+      {
+        "path": "docs/legal/upstream/tauri-plugin-2.6.3/LICENSE_MIT",
+        "source": "https://raw.githubusercontent.com/tauri-apps/tauri/6f6ab1207bb3923c2721fbc67d2fdb1c8deb0c7a/LICENSE_MIT"
+      }
+    ]
+  },
+  {
+    "name": "unic-char-property",
+    "version": "0.9.0",
+    "repo": "https://github.com/open-i18n/rust-unic/",
+    "sha": "5878605364af97a3358368a6eaef02104af2e016",
+    "files": [
+      {
+        "path": "docs/legal/upstream/unic-char-property-0.9.0/LICENSE-APACHE",
+        "source": "https://raw.githubusercontent.com/open-i18n/rust-unic/5878605364af97a3358368a6eaef02104af2e016/LICENSE-APACHE"
+      },
+      {
+        "path": "docs/legal/upstream/unic-char-property-0.9.0/LICENSE-MIT",
+        "source": "https://raw.githubusercontent.com/open-i18n/rust-unic/5878605364af97a3358368a6eaef02104af2e016/LICENSE-MIT"
+      }
+    ]
+  },
+  {
+    "name": "unic-char-range",
+    "version": "0.9.0",
+    "repo": "https://github.com/open-i18n/rust-unic/",
+    "sha": "5878605364af97a3358368a6eaef02104af2e016",
+    "files": [
+      {
+        "path": "docs/legal/upstream/unic-char-range-0.9.0/LICENSE-MIT",
+        "source": "https://raw.githubusercontent.com/open-i18n/rust-unic/5878605364af97a3358368a6eaef02104af2e016/LICENSE-MIT"
+      },
+      {
+        "path": "docs/legal/upstream/unic-char-range-0.9.0/LICENSE-APACHE",
+        "source": "https://raw.githubusercontent.com/open-i18n/rust-unic/5878605364af97a3358368a6eaef02104af2e016/LICENSE-APACHE"
+      }
+    ]
+  },
+  {
+    "name": "unic-common",
+    "version": "0.9.0",
+    "repo": "https://github.com/open-i18n/rust-unic/",
+    "sha": "5878605364af97a3358368a6eaef02104af2e016",
+    "files": [
+      {
+        "path": "docs/legal/upstream/unic-common-0.9.0/LICENSE-MIT",
+        "source": "https://raw.githubusercontent.com/open-i18n/rust-unic/5878605364af97a3358368a6eaef02104af2e016/LICENSE-MIT"
+      },
+      {
+        "path": "docs/legal/upstream/unic-common-0.9.0/LICENSE-APACHE",
+        "source": "https://raw.githubusercontent.com/open-i18n/rust-unic/5878605364af97a3358368a6eaef02104af2e016/LICENSE-APACHE"
+      }
+    ]
+  },
+  {
+    "name": "unic-ucd-ident",
+    "version": "0.9.0",
+    "repo": "https://github.com/open-i18n/rust-unic/",
+    "sha": "8a6ce83063d90b91ae2ce59eddb803edd393fca9",
+    "files": [
+      {
+        "path": "docs/legal/upstream/unic-ucd-ident-0.9.0/LICENSE-MIT",
+        "source": "https://raw.githubusercontent.com/open-i18n/rust-unic/8a6ce83063d90b91ae2ce59eddb803edd393fca9/LICENSE-MIT"
+      },
+      {
+        "path": "docs/legal/upstream/unic-ucd-ident-0.9.0/LICENSE-APACHE",
+        "source": "https://raw.githubusercontent.com/open-i18n/rust-unic/8a6ce83063d90b91ae2ce59eddb803edd393fca9/LICENSE-APACHE"
+      }
+    ]
+  },
+  {
+    "name": "unic-ucd-version",
+    "version": "0.9.0",
+    "repo": "https://github.com/open-i18n/rust-unic/",
+    "sha": "5878605364af97a3358368a6eaef02104af2e016",
+    "files": [
+      {
+        "path": "docs/legal/upstream/unic-ucd-version-0.9.0/LICENSE-MIT",
+        "source": "https://raw.githubusercontent.com/open-i18n/rust-unic/5878605364af97a3358368a6eaef02104af2e016/LICENSE-MIT"
+      },
+      {
+        "path": "docs/legal/upstream/unic-ucd-version-0.9.0/LICENSE-APACHE",
+        "source": "https://raw.githubusercontent.com/open-i18n/rust-unic/5878605364af97a3358368a6eaef02104af2e016/LICENSE-APACHE"
+      }
+    ]
+  },
+  {
+    "name": "webview2-com",
+    "version": "0.38.2",
+    "repo": "https://github.com/wravery/webview2-rs",
+    "sha": "b74dc5e2b394044bea5191052868ce7a106c202c",
+    "sub": "crates/webview2-com",
+    "files": [
+      {
+        "path": "docs/legal/upstream/webview2-com-0.38.2/LICENSE",
+        "source": "https://raw.githubusercontent.com/wravery/webview2-rs/b74dc5e2b394044bea5191052868ce7a106c202c/LICENSE"
+      }
+    ]
+  },
+  {
+    "name": "webview2-com-macros",
+    "version": "0.8.1",
+    "repo": "https://github.com/wravery/webview2-rs",
+    "sha": "dffa41a8a46d3f5565eefbff2de57d38d399f158",
+    "sub": "crates/callback-macros",
+    "files": [
+      {
+        "path": "docs/legal/upstream/webview2-com-macros-0.8.1/LICENSE",
+        "source": "https://raw.githubusercontent.com/wravery/webview2-rs/dffa41a8a46d3f5565eefbff2de57d38d399f158/LICENSE"
+      }
+    ]
+  },
+  {
+    "name": "webview2-com-sys",
+    "version": "0.38.2",
+    "repo": "https://github.com/wravery/webview2-rs",
+    "sha": "b74dc5e2b394044bea5191052868ce7a106c202c",
+    "sub": "crates/bindings",
+    "files": [
+      {
+        "path": "docs/legal/upstream/webview2-com-sys-0.38.2/LICENSE",
+        "source": "https://raw.githubusercontent.com/wravery/webview2-rs/b74dc5e2b394044bea5191052868ce7a106c202c/LICENSE"
+      }
+    ]
+  }
+]

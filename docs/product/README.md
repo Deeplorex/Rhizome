@@ -19,7 +19,7 @@ Rhizome is a single-user desktop vault for long-lived, manually maintained crede
 - On Windows, Hello verification is an operating-system dialog owned by and foregrounded over the active Rhizome window. Quick unlock requests verification once on startup. Relocking after inactivity, hiding the window or pressing Lock stays silent until the user chooses Windows Hello.
 - Encrypted backup and cold migration between Windows and macOS. Automatic backups default to daily while the app is open and the vault is unlocked, with hourly/weekly/off settings and a local destination. Overdue backups run on the next unlock; no additional service is installed. Historical backups are retained until manually removed.
 - System, light, and dark themes with a saved Chinese, English, or system-language interface setting.
-- Built-in Chinese and English privacy policy, terms of use, and third-party open-source license inventory. The same legal documents and notice file are included with native release bundles.
+- Built-in Chinese and English privacy policy, terms of use, and third-party open-source license inventory. Original third-party license texts can be viewed offline on demand. Native bundles include the legal documents, transitive notices, original texts and relevant source archives; outstanding evidence gates are recorded in docs/legal/release-license-review.md.
 
 ## Invariants
 

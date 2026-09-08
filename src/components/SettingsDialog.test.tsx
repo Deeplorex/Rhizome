@@ -98,7 +98,9 @@ describe("settings dialog", () => {
 
     await userEvent.click(within(legalDialog).getByRole("button", { name: "第三方开源许可" }));
     expect(within(legalDialog).getByText("SQLCipher")).toBeInTheDocument();
-    expect(within(legalDialog).getByText("Apache-2.0", { exact: true })).toBeInTheDocument();
+    expect(within(legalDialog).getAllByText("Apache-2.0", { exact: true }).length).toBeGreaterThan(
+      0,
+    );
 
     fireEvent.keyDown(window, { key: "Escape" });
     expect(screen.queryByRole("heading", { name: "第三方开源许可" })).not.toBeInTheDocument();
