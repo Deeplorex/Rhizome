@@ -18,6 +18,47 @@ use crate::{
     storage::{checkpoint, migrate, open_encrypted},
 };
 
+pub fn export_if_due(
+    connection: &rusqlite::Connection,
+    vault_dir: &Path,
+    settings: &crate::models::VaultSettings,
+    now: i64,
+) -> AppResult<Option<String>> {
+    use rusqlite::OptionalExtension;
+    if settings.auto_backup_hours == 0 {
+        return Ok(None);
+    }
+    let directory = if settings.auto_backup_directory.is_empty() {
+        vault_dir.join("backups")
+    } else {
+        PathBuf::from(&settings.auto_backup_directory)
+    };
+    if !directory.is_absolute() {
+        return Err(AppError::Validation("备份目录必须是绝对路径".into()));
+    }
+    let marker = format!("auto-backup:last:{}", directory.display());
+    let last: Option<String> = connection
+        .query_row(
+            "SELECT value FROM vault_meta WHERE key=?1",
+            [&marker],
+            |row| row.get(0),
+        )
+        .optional()?;
+    if let Some(last) = last.and_then(|value| value.parse::<i64>().ok())
+        && now >= last
+        && now.saturating_sub(last) < i64::from(settings.auto_backup_hours) * 3600
+    {
+        return Ok(None);
+    }
+    let target = directory.join(format!(
+        "rhizome-auto-{now}-{}.rhizome-backup",
+        uuid::Uuid::new_v4()
+    ));
+    export_backup(connection, vault_dir, &target)?;
+    connection.execute("INSERT INTO vault_meta(key,value) VALUES (?1,?2) ON CONFLICT(key) DO UPDATE SET value=excluded.value", rusqlite::params![marker, now.to_string()])?;
+    Ok(Some(target.to_string_lossy().into_owned()))
+}
+
 const MANIFEST_NAME: &str = "manifest.json";
 const DATABASE_NAME: &str = "vault.db";
 const ENVELOPE_NAME: &str = "key-envelope.json";
@@ -236,6 +277,71 @@ pub fn restore_backup(
 mod tests {
     use super::*;
     use crate::{crypto::create_envelope, storage::initialize_database};
+
+    #[test]
+    fn automatic_backup_schedule_persists_retries_and_restores() {
+        let root = tempfile::tempdir().unwrap();
+        let source = root.path().join("source");
+        fs::create_dir(&source).unwrap();
+        let (key, envelope, _) = create_envelope("test-password").unwrap();
+        fs::write(
+            source.join(ENVELOPE_NAME),
+            serde_json::to_vec(&envelope).unwrap(),
+        )
+        .unwrap();
+        let connection =
+            initialize_database(&source.join(DATABASE_NAME), &key, &envelope.vault_id).unwrap();
+        let mut settings = crate::models::VaultSettings {
+            auto_backup_hours: 0,
+            ..Default::default()
+        };
+        assert!(
+            export_if_due(&connection, &source, &settings, 100_000)
+                .unwrap()
+                .is_none()
+        );
+        assert!(!source.join("backups").exists());
+        settings.auto_backup_hours = 24;
+        let first = export_if_due(&connection, &source, &settings, 100_000)
+            .unwrap()
+            .unwrap();
+        assert!(Path::new(&first).is_file());
+        drop(connection);
+        let reopened = open_encrypted(&source.join(DATABASE_NAME), &key).unwrap();
+        assert!(
+            export_if_due(&reopened, &source, &settings, 186_399)
+                .unwrap()
+                .is_none()
+        );
+        let second = export_if_due(&reopened, &source, &settings, 186_400)
+            .unwrap()
+            .unwrap();
+        assert_ne!(first, second);
+        assert!(Path::new(&first).exists());
+        restore_backup(
+            Path::new(&second),
+            &root.path().join("restored"),
+            "test-password",
+            false,
+        )
+        .unwrap();
+        let blocked = root.path().join("blocked");
+        fs::write(&blocked, b"not a directory").unwrap();
+        settings.auto_backup_directory = blocked.to_string_lossy().into_owned();
+        assert!(export_if_due(&reopened, &source, &settings, 186_401).is_err());
+        fs::remove_file(&blocked).unwrap();
+        assert!(
+            export_if_due(&reopened, &source, &settings, 186_402)
+                .unwrap()
+                .is_some()
+        );
+        // A clock adjustment must not postpone backups indefinitely.
+        assert!(
+            export_if_due(&reopened, &source, &settings, 100_000)
+                .unwrap()
+                .is_some()
+        );
+    }
 
     #[test]
     fn encrypted_backup_restores_with_password_or_recovery_key() {

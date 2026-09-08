@@ -1,4 +1,4 @@
-import { save } from "@tauri-apps/plugin-dialog";
+import { open, save } from "@tauri-apps/plugin-dialog";
 import {
   Archive,
   BookOpen,
@@ -381,7 +381,57 @@ export function SettingsDialog({
                   <p>{t("备份文件已加密，恢复时需要主密码或恢复密钥。")}</p>
                 </div>
               </div>
+              <div className="settings-grid">
+                <label>
+                  <span>{t("自动备份")}</span>
+                  <select
+                    value={draft.autoBackupHours ?? 24}
+                    onChange={(event) =>
+                      setDraft((current) => ({
+                        ...current,
+                        autoBackupHours: Number(event.target.value),
+                      }))
+                    }
+                  >
+                    <option value={0}>{t("关闭")}</option>
+                    <option value={1}>{t("每小时")}</option>
+                    <option value={24}>{t("每天")}</option>
+                    <option value={168}>{t("每周")}</option>
+                  </select>
+                </label>
+                <label>
+                  <span>{t("备份目录")}</span>
+                  <input
+                    readOnly
+                    value={draft.autoBackupDirectory || t("凭证库内的 backups 文件夹")}
+                  />
+                </label>
+              </div>
+              <p>{t("仅在软件运行且凭证库解锁时自动备份；到期后下次解锁补做，不安装后台服务。")}</p>
+              <p>{t("备份保留历史版本，不自动删除；建议选择其他本地磁盘以防原盘损坏。")}</p>
               <div className="settings-actions">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  disabled={busy}
+                  onClick={() =>
+                    perform(async () => {
+                      const directory = await open({ directory: true, multiple: false });
+                      if (typeof directory === "string")
+                        setDraft((current) => ({ ...current, autoBackupDirectory: directory }));
+                    })
+                  }
+                >
+                  {t("选择备份目录")}
+                </button>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  disabled={busy}
+                  onClick={() => setDraft((current) => ({ ...current, autoBackupDirectory: "" }))}
+                >
+                  {t("使用默认目录")}
+                </button>
                 <button type="button" className="secondary-button" onClick={backup} disabled={busy}>
                   <Archive size={16} />
                   {t("导出 .rhizome-backup")}

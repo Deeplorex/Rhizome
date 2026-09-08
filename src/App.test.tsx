@@ -11,6 +11,7 @@ vi.mock("./lib/commands", () => ({
     listProjects: vi.fn(),
     listFolders: vi.fn(),
     graphData: vi.fn(),
+    autoBackup: vi.fn().mockResolvedValue(null),
     getSettings: vi.fn(),
     getAsset: vi.fn(),
     lockVault: vi.fn(),
@@ -57,7 +58,7 @@ describe("Rhizome shell", () => {
 
     render(<App />);
     await screen.findByRole("heading", { name: "全部凭证" });
-    expect(document.documentElement.dataset.theme).toBe("dark");
+    await waitFor(() => expect(document.documentElement.dataset.theme).toBe("dark"));
 
     await userEvent.click(screen.getByRole("button", { name: "切换主题" }));
 

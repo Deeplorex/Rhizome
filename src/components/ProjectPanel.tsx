@@ -1,8 +1,9 @@
-import { Boxes, Component, GitBranch, Layers3, Plus, Star, Trash2, X } from "lucide-react";
+import { Boxes, Component, GitBranch, Layers3, Pencil, Plus, Star, Trash2, X } from "lucide-react";
 import { type FormEvent, useEffect, useId, useState } from "react";
 import { formatEnvironment } from "../lib/format";
 import { useI18n } from "../lib/i18n";
 import type { EnvironmentInput, Project, ProjectInput, ServiceInput } from "../types";
+import { ProjectLogo } from "./ProjectLogo";
 
 interface ProjectPanelProps {
   projects: Project[];
@@ -36,6 +37,45 @@ export function ProjectPanel({
 }: ProjectPanelProps) {
   const { language, t } = useI18n();
   const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState<Project | null>(null);
+  const [logo, setLogo] = useState("");
+  const [readingLogo, setReadingLogo] = useState(false);
+  const openProduct = (project?: Project) => {
+    setEditing(project || null);
+    setName(project?.name || "");
+    setDescription(project?.description || "");
+    setLogo(project?.logo || "");
+    setError("");
+    setCreating(true);
+  };
+  const chooseLogo = async (file?: File) => {
+    if (!file) return;
+    setError("");
+    if (!["image/png", "image/jpeg"].includes(file.type) || file.size > 1024 * 1024) {
+      setError(t("Logo 必须为不超过 1 MB 的 PNG 或 JPEG 图片"));
+      return;
+    }
+    setReadingLogo(true);
+    try {
+      const data = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error(t("无法读取图片")));
+        reader.readAsDataURL(file);
+      });
+      await new Promise<void>((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve();
+        image.onerror = () => reject(new Error(t("无法读取图片")));
+        image.src = data;
+      });
+      setLogo(data);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : String(reason));
+    } finally {
+      setReadingLogo(false);
+    }
+  };
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [structureForm, setStructureForm] = useState<"service" | "environment" | null>(null);
@@ -58,7 +98,14 @@ export function ProjectPanel({
     setSaving(true);
     setError("");
     try {
-      await onSave({ name, description, repoPath: "", favorite: false });
+      await onSave({
+        ...(editing ? { id: editing.id } : {}),
+        name: name.trim(),
+        description,
+        logo,
+        repoPath: editing?.repoPath || "",
+        favorite: editing?.favorite || false,
+      });
       setName("");
       setDescription("");
       setCreating(false);
@@ -119,7 +166,7 @@ export function ProjectPanel({
           <button
             type="button"
             className="primary-icon"
-            onClick={() => setCreating(true)}
+            onClick={() => openProduct()}
             aria-label={t("新建产品")}
           >
             <Plus size={20} />
@@ -133,7 +180,7 @@ export function ProjectPanel({
             </span>
             <h3>{t("还没有产品")}</h3>
             <p>{t("例如小程序、自媒体品牌、个人网站或线上店铺。")}</p>
-            <button type="button" className="secondary-button" onClick={() => setCreating(true)}>
+            <button type="button" className="secondary-button" onClick={() => openProduct()}>
               <Plus size={16} />
               {t("新建产品")}
             </button>
@@ -148,7 +195,7 @@ export function ProjectPanel({
                 onClick={() => onSelect(project.id)}
               >
                 <span>
-                  <Boxes size={17} />
+                  <ProjectLogo logo={project.logo} size={24} />
                 </span>
                 <div>
                   <strong>
@@ -173,22 +220,36 @@ export function ProjectPanel({
           <>
             <header className="project-detail__head">
               <div>
-                <h2>{selected.name}</h2>
+                <h2 className="project-heading">
+                  <ProjectLogo logo={selected.logo} size={40} />
+                  {selected.name}
+                </h2>
                 <p>{selected.description || t("尚未填写产品说明")}</p>
               </div>
-              <button
-                type="button"
-                className="text-danger"
-                onClick={() => {
-                  if (window.confirm(t("删除产品“{name}”及其关联？", { name: selected.name }))) {
-                    void attempt(() => onDelete(selected.id));
-                  }
-                }}
-                disabled={saving}
-              >
-                <Trash2 size={15} />
-                {t("删除")}
-              </button>
+              <div className="project-actions">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={() => openProduct(selected)}
+                  disabled={saving || readingLogo}
+                >
+                  <Pencil size={15} />
+                  {t("编辑产品")}
+                </button>
+                <button
+                  type="button"
+                  className="text-danger"
+                  onClick={() => {
+                    if (window.confirm(t("删除产品“{name}”及其关联？", { name: selected.name }))) {
+                      void attempt(() => onDelete(selected.id));
+                    }
+                  }}
+                  disabled={saving || readingLogo}
+                >
+                  <Trash2 size={15} />
+                  {t("删除")}
+                </button>
+              </div>
             </header>
             <div className="project-stats">
               <span>
@@ -359,14 +420,14 @@ export function ProjectPanel({
           >
             <header className="modal-head">
               <div>
-                <h2 id={productTitleId}>{t("新建产品")}</h2>
+                <h2 id={productTitleId}>{editing ? t("编辑产品") : t("新建产品")}</h2>
               </div>
               <button
                 type="button"
                 className="icon-button"
                 onClick={() => setCreating(false)}
-                aria-label={t("关闭新建产品")}
-                disabled={saving}
+                aria-label={editing ? t("关闭编辑产品") : t("关闭新建产品")}
+                disabled={saving || readingLogo}
               >
                 <X size={18} />
               </button>
@@ -391,6 +452,33 @@ export function ProjectPanel({
                 placeholder={t("它解决什么问题？")}
               />
             </label>
+            <div className="project-logo-editor">
+              <ProjectLogo logo={logo} size={56} />
+              <label className="field-group">
+                <span>{t("自定义 Logo")}</span>
+                <input
+                  type="file"
+                  aria-label={t("自定义 Logo")}
+                  accept="image/png,image/jpeg"
+                  disabled={saving || readingLogo}
+                  onChange={(event) => {
+                    void chooseLogo(event.target.files?.[0]);
+                    event.target.value = "";
+                  }}
+                />
+                <small>{t("PNG 或 JPEG，最大 1 MB")}</small>
+              </label>
+              {logo && (
+                <button
+                  type="button"
+                  className="text-button"
+                  disabled={saving || readingLogo}
+                  onClick={() => setLogo("")}
+                >
+                  {t("恢复默认图标")}
+                </button>
+              )}
+            </div>
             {error && (
               <div className="inline-error small-modal__message" role="alert">
                 {error}
@@ -401,11 +489,15 @@ export function ProjectPanel({
                 type="button"
                 className="secondary-button"
                 onClick={() => setCreating(false)}
-                disabled={saving}
+                disabled={saving || readingLogo}
               >
                 {t("取消")}
               </button>
-              <button type="submit" className="primary-button" disabled={!name.trim() || saving}>
+              <button
+                type="submit"
+                className="primary-button"
+                disabled={!name.trim() || saving || readingLogo}
+              >
                 {saving ? t("正在保存…") : t("保存产品")}
               </button>
             </footer>
@@ -432,7 +524,7 @@ export function ProjectPanel({
                 className="icon-button"
                 onClick={() => setStructureForm(null)}
                 aria-label={t("关闭结构编辑")}
-                disabled={saving}
+                disabled={saving || readingLogo}
               >
                 <X size={18} />
               </button>
@@ -502,7 +594,7 @@ export function ProjectPanel({
                 type="button"
                 className="secondary-button"
                 onClick={() => setStructureForm(null)}
-                disabled={saving}
+                disabled={saving || readingLogo}
               >
                 {t("取消")}
               </button>

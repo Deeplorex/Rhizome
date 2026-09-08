@@ -4519,3 +4519,27 @@ button {
     width: 100%;
   }
 }
+
+.project-logo {
+  object-fit: contain;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.project-heading,
+.project-actions,
+.project-logo-editor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.project-actions {
+  flex-wrap: wrap;
+}
+.project-logo-editor {
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+.project-logo-editor .field-group {
+  flex: 1;
+  min-width: 180px;
+}

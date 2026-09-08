@@ -1,5 +1,3 @@
-import { emptyAsset } from "./assetTemplates";
-import type { AssetQuery } from "./commands";
 import type {
   AssetDetail,
   AssetInput,
@@ -15,6 +13,8 @@ import type {
   VaultSettings,
   VaultStatus,
 } from "../types";
+import { emptyAsset } from "./assetTemplates";
+import type { AssetQuery } from "./commands";
 
 const now = "2026-09-02T12:00:00Z";
 let sequence = 20;
@@ -496,6 +496,7 @@ export function createDemoApi() {
     deleteAttachment: async () => undefined,
     listProjects: async () => clone(projectRows()),
     saveProject: async (input: {
+      logo?: string;
       id?: string | null;
       name: string;
       description: string;
@@ -615,6 +616,7 @@ export function createDemoApi() {
       settings = clone(next);
       return clone(settings);
     },
+    autoBackup: async () => null,
     exportBackup: async () => undefined,
     inspectBackup: async () => ({
       version: 1,

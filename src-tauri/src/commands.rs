@@ -320,6 +320,11 @@ pub async fn save_settings(
     Ok(saved)
 }
 
+#[tauri::command]
+pub async fn auto_backup(state: State<'_, AppState>) -> CommandResult<Option<String>> {
+    command(state.auto_backup())
+}
+
 #[tauri::command(rename_all = "camelCase")]
 pub async fn export_backup(state: State<'_, AppState>, target_path: String) -> CommandResult<()> {
     command(state.with_session(|session| {

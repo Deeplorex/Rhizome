@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { VaultSettings } from "../types";
 import { SettingsDialog } from "./SettingsDialog";
 
-vi.mock("@tauri-apps/plugin-dialog", () => ({ save: vi.fn() }));
+vi.mock("@tauri-apps/plugin-dialog", () => ({ open: vi.fn(), save: vi.fn() }));
 
 const settings: VaultSettings = {
   theme: "dark",
@@ -36,10 +36,13 @@ describe("settings dialog", () => {
     await userEvent.selectOptions(screen.getByLabelText("自动锁定"), "15");
     expect(screen.getByLabelText("关闭窗口时")).toHaveValue("exit");
     await userEvent.selectOptions(screen.getByLabelText("关闭窗口时"), "tray");
+    expect(screen.getByLabelText("自动备份")).toHaveValue("24");
+    await userEvent.selectOptions(screen.getByLabelText("自动备份"), "168");
     await userEvent.click(screen.getByRole("button", { name: "保存设置" }));
 
     expect(onSave).toHaveBeenCalledWith({
       ...settings,
+      autoBackupHours: 168,
       theme: "light",
       language: "en-US",
       autoLockMinutes: 15,

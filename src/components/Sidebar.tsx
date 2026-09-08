@@ -1,7 +1,6 @@
 import {
   Archive,
   Boxes,
-  CloudCog,
   Database,
   FileKey2,
   FolderPlus,
@@ -19,6 +18,7 @@ import { KIND_LABELS } from "../lib/assetTemplates";
 import { useI18n } from "../lib/i18n";
 import type { AssetKind, AssetSummary, Folder, FolderInput, Project } from "../types";
 import { Brand } from "./Brand";
+import { ProjectLogo } from "./ProjectLogo";
 
 export type NavigationTarget =
   | { view: "assets"; kind?: AssetKind; folderId?: string; favorites?: boolean; trash?: boolean }
@@ -246,7 +246,7 @@ export function Sidebar({
               }
               onClick={() => onNavigate({ view: "projects", projectId: project.id })}
             >
-              <CloudCog size={17} />
+              <ProjectLogo logo={project.logo} size={20} />
               <span className="truncate">{project.name}</span>
             </button>
           ))}

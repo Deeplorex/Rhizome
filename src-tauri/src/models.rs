@@ -290,6 +290,8 @@ pub struct AssetDetail {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ProjectInput {
+    #[serde(default)]
+    pub logo: String,
     pub id: Option<String>,
     pub name: String,
     #[serde(default)]
@@ -342,6 +344,8 @@ pub struct EnvironmentInput {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Project {
+    #[serde(default)]
+    pub logo: String,
     pub id: String,
     pub name: String,
     pub description: String,
@@ -405,6 +409,10 @@ pub struct RevealResult {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct VaultSettings {
+    #[serde(default = "default_backup_interval")]
+    pub auto_backup_hours: u32,
+    #[serde(default)]
+    pub auto_backup_directory: String,
     pub theme: String,
     #[serde(default = "default_language")]
     pub language: String,
@@ -413,6 +421,10 @@ pub struct VaultSettings {
     pub auto_lock_minutes: u32,
     pub reveal_seconds: u32,
     pub clipboard_seconds: u32,
+}
+
+fn default_backup_interval() -> u32 {
+    24
 }
 
 fn default_language() -> String {
@@ -426,6 +438,8 @@ fn default_close_behavior() -> String {
 impl Default for VaultSettings {
     fn default() -> Self {
         Self {
+            auto_backup_hours: default_backup_interval(),
+            auto_backup_directory: String::new(),
             theme: "system".into(),
             language: default_language(),
             close_behavior: default_close_behavior(),
@@ -456,6 +470,8 @@ mod tests {
         )
         .unwrap();
 
+        assert_eq!(settings.auto_backup_hours, 24);
+        assert!(settings.auto_backup_directory.is_empty());
         assert_eq!(settings.language, "system");
         assert_eq!(settings.close_behavior, "exit");
     }

@@ -1,5 +1,19 @@
 # Product changes
 
+## 2026-09-08 — Automatic encrypted backups while open
+
+- Type: requirement
+- Default daily automatic backups, with hourly/weekly/off settings and an optional local destination. The default is the vault backups folder. No additional service or process; closing or locking pauses checks and overdue backups run on the next unlock.
+- Rust serializes encrypted exports with vault operations and persists the last successful time per destination. Failures retry, history is retained, and existing encrypted restore remains supported.
+- Tests: automatic backup timing, restart, failure retry and restore; timer lifecycle and settings controls.
+
+## 2026-09-08 — Editable products and local logos
+
+- Type: requirement
+- Product details now edit the name and description, preserving existing associations and metadata. Create/edit supports local PNG/JPEG logos up to 1 MB, preview, replacement and restoring the default icon.
+- Logos display in the sidebar, product list and details and persist inside SQLCipher through migration 0003; no remote resources or new dependencies.
+- Tests: product editor cancellation/save and logo removal; Rust product persistence, logo validation and migration tests.
+
 ## 2026-09-07 — Third-party maintenance rules for AI contributors
 
 - Type: `maintenance`

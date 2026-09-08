@@ -317,12 +317,29 @@ impl AppState {
         self.with_session(|_| Ok(self.settings.lock().clone()))
     }
 
+    pub fn auto_backup(&self) -> AppResult<Option<String>> {
+        let guard = self.session.lock();
+        let Some(session) = guard.as_ref() else {
+            return Ok(None);
+        };
+        let settings = self.settings.lock().clone();
+        backup::export_if_due(
+            &session.connection,
+            &session.vault_dir,
+            &settings,
+            chrono::Utc::now().timestamp(),
+        )
+    }
+
     pub fn close_to_tray(&self) -> bool {
         self.settings.lock().close_behavior == "tray"
     }
 
     pub fn save_settings(&self, settings: VaultSettings) -> AppResult<VaultSettings> {
-        if !["system", "light", "dark"].contains(&settings.theme.as_str())
+        if ![0, 1, 24, 168].contains(&settings.auto_backup_hours)
+            || (!settings.auto_backup_directory.is_empty()
+                && !Path::new(&settings.auto_backup_directory).is_absolute())
+            || !["system", "light", "dark"].contains(&settings.theme.as_str())
             || !["system", "zh-CN", "en-US"].contains(&settings.language.as_str())
             || !["exit", "tray"].contains(&settings.close_behavior.as_str())
             || !(1..=120).contains(&settings.auto_lock_minutes)
@@ -364,6 +381,29 @@ mod tests {
     use crate::models::{AssetInput, AssetKind, SecretFieldInput};
 
     use super::*;
+
+    #[test]
+    fn automatic_backup_skips_locked_vault_and_resumes_after_unlock() {
+        let root = tempfile::tempdir().unwrap();
+        let state = AppState::new(root.path().join("config"));
+        assert!(state.auto_backup().unwrap().is_none());
+        state
+            .initialize(root.path().join("vault"), "test-password")
+            .unwrap();
+        assert!(
+            state
+                .save_settings(VaultSettings {
+                    auto_backup_hours: 2,
+                    ..Default::default()
+                })
+                .is_err()
+        );
+        state.lock();
+        assert!(state.auto_backup().unwrap().is_none());
+        state.unlock("test-password", false).unwrap();
+        assert!(state.auto_backup().unwrap().is_some());
+        assert!(state.auto_backup().unwrap().is_none());
+    }
 
     #[test]
     fn close_behavior_persists_and_is_available_while_locked() {

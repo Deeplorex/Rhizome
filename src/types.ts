@@ -155,6 +155,7 @@ export interface AssetDetail {
 }
 
 export interface ProjectInput {
+  logo?: string;
   id?: string | null;
   name: string;
   description: string;
@@ -193,6 +194,7 @@ export interface Environment {
 }
 
 export interface Project {
+  logo?: string;
   id: string;
   name: string;
   description: string;
@@ -242,6 +244,8 @@ export interface RevealResult {
 }
 
 export interface VaultSettings {
+  autoBackupHours?: number;
+  autoBackupDirectory?: string;
   theme: ThemePreference;
   language: LanguagePreference;
   closeBehavior?: "exit" | "tray";

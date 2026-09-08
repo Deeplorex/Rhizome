@@ -9,6 +9,7 @@ import { RecoveryKeyDialog } from "./components/RecoveryKeyDialog";
 import { SettingsDialog } from "./components/SettingsDialog";
 import { type NavigationTarget, Sidebar } from "./components/Sidebar";
 import { VaultGate } from "./components/VaultGate";
+import { useAutoBackup } from "./hooks/useAutoBackup";
 import { useAutoLock } from "./hooks/useAutoLock";
 import { emptyAsset, KIND_LABELS } from "./lib/assetTemplates";
 import { api } from "./lib/commands";
@@ -78,6 +79,13 @@ export default function App() {
   const busyOperations = useRef(0);
   const mainContentId = useId();
   const assetSearchId = useId();
+
+  useAutoBackup(
+    status?.state === "unlocked" && settings.autoBackupHours !== 0,
+    JSON.stringify([status?.vaultPath, settings.autoBackupHours, settings.autoBackupDirectory]),
+    api.autoBackup,
+    () => setError(t("自动备份失败，请检查备份目录和磁盘空间；软件运行期间会自动重试。")),
+  );
 
   const applyTheme = useCallback((theme: ThemePreference) => {
     document.documentElement.dataset.theme = theme;
@@ -308,11 +316,14 @@ export default function App() {
     }, message);
 
   const saveProject = async (input: ProjectInput) =>
-    run(async () => {
-      const saved = await api.saveProject(input);
-      await loadIndex();
-      setNavigation({ view: "projects", projectId: saved.id });
-    }, t("产品已建立"));
+    run(
+      async () => {
+        const saved = await api.saveProject(input);
+        await loadIndex();
+        setNavigation({ view: "projects", projectId: saved.id });
+      },
+      input.id ? t("产品已更新") : t("产品已建立"),
+    );
   const deleteProject = async (id: string) =>
     run(async () => {
       await api.deleteProject(id);

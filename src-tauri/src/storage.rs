@@ -22,6 +22,7 @@ use crate::{
 
 const MIGRATION_1: &str = include_str!("../migrations/0001_init.sql");
 const MIGRATION_2: &str = include_str!("../migrations/0002_asset_relations.sql");
+const MIGRATION_3: &str = include_str!("../migrations/0003_project_logo.sql");
 const ATTACHMENT_LIMIT: u64 = 10 * 1024 * 1024;
 
 pub fn open_encrypted(path: &Path, key: &[u8]) -> AppResult<Connection> {
@@ -69,6 +70,15 @@ pub fn migrate(connection: &Connection) -> AppResult<()> {
             "INSERT OR IGNORE INTO schema_migrations(version, applied_at) VALUES (2, ?1)",
             [Utc::now().to_rfc3339()],
         )?;
+    }
+    if current < 3 {
+        let transaction = connection.unchecked_transaction()?;
+        transaction.execute_batch(MIGRATION_3)?;
+        transaction.execute(
+            "INSERT INTO schema_migrations(version, applied_at) VALUES (3, ?1)",
+            [Utc::now().to_rfc3339()],
+        )?;
+        transaction.commit()?;
     }
     Ok(())
 }
@@ -736,7 +746,7 @@ fn bindings_for_project(connection: &Connection, project_id: &str) -> AppResult<
 }
 
 pub fn list_projects(connection: &Connection) -> AppResult<Vec<Project>> {
-    let mut statement = connection.prepare("SELECT id,name,description,repo_path,favorite,updated_at FROM projects WHERE deleted_at IS NULL ORDER BY favorite DESC,updated_at DESC")?;
+    let mut statement = connection.prepare("SELECT id,name,description,repo_path,favorite,updated_at,logo FROM projects WHERE deleted_at IS NULL ORDER BY favorite DESC,updated_at DESC")?;
     let base = statement
         .query_map([], |row| {
             Ok((
@@ -746,11 +756,12 @@ pub fn list_projects(connection: &Connection) -> AppResult<Vec<Project>> {
                 row.get::<_, String>(3)?,
                 row.get::<_, i64>(4)? != 0,
                 row.get::<_, String>(5)?,
+                row.get::<_, String>(6)?,
             ))
         })?
         .collect::<Result<Vec<_>, _>>()?;
     let mut projects = Vec::with_capacity(base.len());
-    for (id, name, description, repo_path, favorite, updated_at) in base {
+    for (id, name, description, repo_path, favorite, updated_at, logo) in base {
         let mut service_statement = connection.prepare(
             "SELECT id,project_id,name,description FROM services WHERE project_id=?1 ORDER BY name",
         )?;
@@ -777,6 +788,7 @@ pub fn list_projects(connection: &Connection) -> AppResult<Vec<Project>> {
             })?
             .collect::<Result<Vec<_>, _>>()?;
         projects.push(Project {
+            logo,
             id: id.clone(),
             name,
             description,
@@ -791,15 +803,42 @@ pub fn list_projects(connection: &Connection) -> AppResult<Vec<Project>> {
     Ok(projects)
 }
 
+fn validate_project_logo(logo: &str) -> AppResult<()> {
+    if logo.is_empty() {
+        return Ok(());
+    }
+    let invalid = || AppError::Validation("Logo 必须为不超过 1 MB 的 PNG 或 JPEG 图片".into());
+    if logo.len() > 1_398_128 {
+        return Err(invalid());
+    }
+    let (mime, encoded) = logo.split_once(";base64,").ok_or_else(invalid)?;
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(encoded)
+        .map_err(|_| invalid())?;
+    if bytes.len() > 1024 * 1024 {
+        return Err(invalid());
+    }
+    let valid = match mime {
+        "data:image/png" => bytes.starts_with(b"\x89PNG\r\n\x1a\n"),
+        "data:image/jpeg" => bytes.starts_with(&[0xff, 0xd8, 0xff]),
+        _ => false,
+    };
+    if !valid {
+        return Err(invalid());
+    }
+    Ok(())
+}
+
 pub fn save_project(connection: &Connection, input: ProjectInput) -> AppResult<Project> {
+    validate_project_logo(&input.logo)?;
     if input.name.trim().is_empty() {
         return Err(AppError::Validation("产品名称不能为空".into()));
     }
     let id = input.id.unwrap_or_else(|| Uuid::new_v4().to_string());
     let now = Utc::now().to_rfc3339();
     connection.execute(
-        "INSERT INTO projects(id,name,description,repo_path,favorite,created_at,updated_at) VALUES (?1,?2,?3,?4,?5,?6,?6) ON CONFLICT(id) DO UPDATE SET name=excluded.name,description=excluded.description,repo_path=excluded.repo_path,favorite=excluded.favorite,updated_at=excluded.updated_at",
-        params![id, input.name.trim(), input.description, input.repo_path, i64::from(input.favorite), now],
+        "INSERT INTO projects(id,name,description,repo_path,favorite,created_at,updated_at,logo) VALUES (?1,?2,?3,?4,?5,?6,?6,?7) ON CONFLICT(id) DO UPDATE SET name=excluded.name,description=excluded.description,repo_path=excluded.repo_path,favorite=excluded.favorite,updated_at=excluded.updated_at,logo=excluded.logo",
+        params![id, input.name.trim(), input.description, input.repo_path, i64::from(input.favorite), now, input.logo],
     )?;
     list_projects(connection)?
         .into_iter()
@@ -1029,6 +1068,71 @@ mod migration_tests {
     use super::*;
 
     #[test]
+    fn product_logo_migration_and_edit_round_trip() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("vault.db");
+        let key = [4_u8; 32];
+        let connection = open_encrypted(&path, &key).unwrap();
+        connection.execute_batch(MIGRATION_1).unwrap();
+        connection.execute_batch(MIGRATION_2).unwrap();
+        connection.execute_batch("CREATE TABLE IF NOT EXISTS schema_migrations(version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL); INSERT INTO schema_migrations VALUES (2, ''); INSERT INTO projects(id,name,description,repo_path,favorite,created_at,updated_at) VALUES ('p','Old','Before','local',1,'created','updated');").unwrap();
+        migrate(&connection).unwrap();
+        migrate(&connection).unwrap();
+        assert_eq!(list_projects(&connection).unwrap()[0].logo, "");
+        let service = save_service(
+            &connection,
+            ServiceInput {
+                id: None,
+                project_id: "p".into(),
+                name: "Web".into(),
+                description: "".into(),
+            },
+        )
+        .unwrap();
+        let logo = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aN1cAAAAASUVORK5CYII=";
+        let mut input = ProjectInput {
+            id: Some("p".into()),
+            name: "New".into(),
+            description: "After".into(),
+            repo_path: "local".into(),
+            favorite: true,
+            logo: logo.into(),
+        };
+        let edited = save_project(&connection, input.clone()).unwrap();
+        assert_eq!(edited.services[0].id, service.id);
+        drop(connection);
+        let reopened = open_encrypted(&path, &key).unwrap();
+        let persisted = list_projects(&reopened).unwrap().remove(0);
+        assert_eq!(persisted.logo, logo);
+        assert_eq!(persisted.name, "New");
+        assert_eq!(persisted.description, "After");
+        assert!(persisted.favorite);
+        assert_eq!(persisted.repo_path, "local");
+        input.logo = "https://example.invalid/logo.png".into();
+        assert!(save_project(&reopened, input.clone()).is_err());
+        assert_eq!(list_projects(&reopened).unwrap()[0].logo, logo);
+        input.logo.clear();
+        assert_eq!(save_project(&reopened, input).unwrap().logo, "");
+    }
+
+    #[test]
+    fn product_logo_rejects_unsupported_invalid_and_oversized_data() {
+        assert!(validate_project_logo("").is_ok());
+        for logo in [
+            "https://example.invalid/a.png",
+            "data:image/svg+xml;base64,PHN2Zz4=",
+            "data:image/png;base64,SGVsbG8=",
+            "data:image/jpeg;base64,%%%",
+        ] {
+            assert!(validate_project_logo(logo).is_err());
+        }
+        let mut bytes = vec![0xff, 0xd8, 0xff];
+        bytes.resize(1024 * 1024 + 1, 0);
+        let encoded = base64::engine::general_purpose::STANDARD.encode(bytes);
+        assert!(validate_project_logo(&format!("data:image/jpeg;base64,{encoded}")).is_err());
+    }
+
+    #[test]
     fn encrypted_database_migrates_and_reopens() {
         let directory = tempfile::tempdir().unwrap();
         let path = directory.path().join("vault.db");
@@ -1039,7 +1143,7 @@ mod migration_tests {
                 row.get(0)
             })
             .unwrap();
-        assert_eq!(version, 2);
+        assert_eq!(version, 3);
         drop(connection);
         assert!(open_encrypted(&path, &[8_u8; 32]).is_err());
         let reopened = open_encrypted(&path, &key).unwrap();
@@ -1086,7 +1190,7 @@ mod migration_tests {
                 |row| row.get(0),
             )
             .unwrap();
-        assert_eq!(version, 2);
+        assert_eq!(version, 3);
         assert_eq!(relation_table, "asset_relations");
     }
 
@@ -1187,6 +1291,7 @@ mod migration_tests {
         let project = save_project(
             &connection,
             ProjectInput {
+                logo: String::new(),
                 id: None,
                 name: "AAA".into(),
                 description: "".into(),
@@ -1402,6 +1507,7 @@ mod migration_tests {
         let project = save_project(
             &connection,
             ProjectInput {
+                logo: String::new(),
                 id: None,
                 name: "智能客服".into(),
                 description: "".into(),

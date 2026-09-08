@@ -14,6 +14,28 @@ export type AppLanguage = "zh-CN" | "en-US";
 const STORAGE_KEY = "rhizome-language";
 
 const english: Record<string, string> = {
+  自动备份: "Automatic backup",
+  每小时: "Hourly",
+  每天: "Daily",
+  每周: "Weekly",
+  备份目录: "Backup folder",
+  "凭证库内的 backups 文件夹": "backups folder inside the vault",
+  选择备份目录: "Choose backup folder",
+  使用默认目录: "Use default folder",
+  "仅在软件运行且凭证库解锁时自动备份；到期后下次解锁补做，不安装后台服务。":
+    "Backs up only while the app is running and the vault is unlocked. Overdue backups run on the next unlock. No background service is installed.",
+  "备份保留历史版本，不自动删除；建议选择其他本地磁盘以防原盘损坏。":
+    "History is kept without automatic deletion. Choose another local drive to protect against drive failure.",
+  "自动备份失败，请检查备份目录和磁盘空间；软件运行期间会自动重试。":
+    "Automatic backup failed. Check the folder and free disk space; the app will retry while running.",
+  编辑产品: "Edit product",
+  关闭编辑产品: "Close product editor",
+  产品已更新: "Product updated",
+  "自定义 Logo": "Custom logo",
+  "PNG 或 JPEG，最大 1 MB": "PNG or JPEG, up to 1 MB",
+  "Logo 必须为不超过 1 MB 的 PNG 或 JPEG 图片": "Logo must be a PNG or JPEG image up to 1 MB",
+  无法读取图片: "Unable to read image",
+  恢复默认图标: "Restore default icon",
   个人凭证库: "Personal credential vault",
   凭证库: "Credentials",
   全部凭证: "All credentials",

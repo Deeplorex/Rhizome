@@ -91,6 +91,7 @@ const tauriApi = {
 
   getSettings: () => invoke<VaultSettings>("get_settings"),
   saveSettings: (settings: VaultSettings) => invoke<VaultSettings>("save_settings", { settings }),
+  autoBackup: () => invoke<string | null>("auto_backup"),
   exportBackup: (targetPath: string) => invoke<void>("export_backup", { targetPath }),
   inspectBackup: (backupPath: string) => invoke<BackupInspection>("inspect_backup", { backupPath }),
   restoreBackup: (

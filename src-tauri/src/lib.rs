@@ -111,6 +111,7 @@ pub fn run() {
             commands::graph_data,
             commands::get_settings,
             commands::save_settings,
+            commands::auto_backup,
             commands::export_backup,
             commands::inspect_backup,
             commands::restore_backup,
