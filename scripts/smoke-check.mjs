@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 const required = [
   "dist/index.html",
@@ -10,3 +10,8 @@ if (missing.length > 0) {
   throw new Error(`Missing build artifacts/configuration: ${missing.join(", ")}`);
 }
 console.log("Rhizome build artifacts are present");
+
+const config = JSON.parse(readFileSync("src-tauri/tauri.conf.json", "utf8"));
+if (config.bundle.windows.wix?.language !== "zh-CN") {
+  throw new Error("Chinese product names require the zh-CN MSI language/code page");
+}

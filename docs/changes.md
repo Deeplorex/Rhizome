@@ -1,5 +1,12 @@
 # Product changes
 
+## 2026-09-08 — Chinese MSI packaging
+
+- Type: bugfix
+- Set WiX installer language to zh-CN so the Chinese product name can be encoded without LGHT0311 failures.
+- Regression: scripts/smoke-check.mjs verifies the MSI language configuration.
+
+
 ## 2026-09-08 — Automatic encrypted backups while open
 
 - Type: requirement
