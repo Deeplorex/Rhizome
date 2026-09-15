@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { VaultSettings } from "../types";
@@ -50,6 +51,57 @@ describe("settings dialog", () => {
     });
     expect(await screen.findByText("设置已保存")).toBeInTheDocument();
     expect(screen.queryByText(/Vault Key|轮换/)).not.toBeInTheDocument();
+  });
+
+  it("lets the user pick a backup folder from the backup directory field", async () => {
+    vi.mocked(openDialog).mockResolvedValue("D:/backups/rhizome");
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(
+      <SettingsDialog
+        settings={settings}
+        systemUnlockAvailable
+        systemUnlockEnabled={false}
+        onClose={vi.fn()}
+        onSave={onSave}
+        onExportBackup={vi.fn()}
+        onToggleSystemUnlock={vi.fn()}
+        onRotateRecovery={vi.fn()}
+        onChangePassword={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByLabelText("备份目录")).toHaveValue("凭证库内的 backups 文件夹");
+    await userEvent.click(screen.getByLabelText("备份目录"));
+    expect(openDialog).toHaveBeenCalledWith({ directory: true, multiple: false });
+    expect(screen.getByLabelText("备份目录")).toHaveValue("D:/backups/rhizome");
+
+    await userEvent.click(screen.getByRole("button", { name: "保存设置" }));
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ autoBackupDirectory: "D:/backups/rhizome" }),
+    );
+  });
+
+  it("shows the backup schedule and retention hints in the backup section", () => {
+    render(
+      <SettingsDialog
+        settings={settings}
+        systemUnlockAvailable
+        systemUnlockEnabled={false}
+        onClose={vi.fn()}
+        onSave={vi.fn()}
+        onExportBackup={vi.fn()}
+        onToggleSystemUnlock={vi.fn()}
+        onRotateRecovery={vi.fn()}
+        onChangePassword={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByText("仅在软件运行且凭证库解锁时自动备份；到期后下次解锁补做，不安装后台服务。"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("备份保留历史版本，不自动删除；建议选择其他本地磁盘以防原盘损坏。"),
+    ).toBeInTheDocument();
   });
 
   it("closes with Escape when no operation is running", () => {

@@ -1,5 +1,45 @@
 # Product changes
 
+## 2026-09-15 — Settings hint text matches the muted hint style
+
+- Type: `bugfix`
+- Supplementary paragraphs inside settings sections (backup schedule/retention notes, tray note) had no styling and rendered as large dark body text, clashing with the small muted hints used in section headers. They now share the muted 9px hint style.
+- Tests: `src/components/SettingsDialog.test.tsx`.
+
+## 2026-09-15 — Backup section matches other settings and its folder is pickable
+
+- Type: `bugfix`
+- The encrypted-backup section used an undefined `settings-grid` class, so it fell back to browser default layout and looked unlike the other settings sections; it now uses the shared two-column form grid.
+- The backup directory read-only field was inert: it looked interactive but could not be clicked. The field and its inline folder button now open the native folder picker directly; the separate “选择备份目录” button is removed. The default folder, export and recovery-key actions stay.
+- Tests: `src/components/SettingsDialog.test.tsx`.
+
+## 2026-09-15 — Product stars and favorite-first sidebar shortcuts
+
+- Type: `requirement`
+- Products can now be starred from the detail header; the toggle saves through the existing project upsert, so the starred state persists and the product list shows the star.
+- The sidebar product shortcuts list starred products first, then the most recently updated, keeping only the top three; the full list stays under “全部产品”.
+- Tests: `src/components/ProjectPanel.test.tsx`, `src/components/Sidebar.test.tsx`.
+
+## 2026-09-13 — Sidebar shows the three most recently updated products
+
+- Type: `optimization`
+- The sidebar product shortcuts now list only the three most recently updated products, ordered purely by update time; the full list remains available under “全部产品”.
+- Tests: `src/components/Sidebar.test.tsx`.
+
+## 2026-09-13 — Editable product compositions
+
+- Type: `optimization`
+- Product compositions (services) can now be edited in place like products: each row gains an edit action that opens the structure dialog prefilled, and saving updates name and description by id while keeping the composition's environments and usage bindings intact.
+- Structure rows align their action buttons in a shared actions container; the dialog title distinguishes adding from editing.
+- Tests: `src/components/ProjectPanel.test.tsx`.
+
+## 2026-09-09 — Full product paths and clickable used credentials
+
+- Type: `optimization`
+- Credential details show the full product path (product / composition / environment) for each usage binding instead of only the consumer's own name; consumers removed from the tree keep the stored fallback name.
+- Product details list used credentials with the same full path, and clicking a credential card opens that credential's detail dialog without leaving the product view.
+- Tests: `src/lib/format.test.ts`, `src/components/DetailPanel.test.tsx`, `src/components/ProjectPanel.test.tsx`.
+
 ## 2026-09-08 — Offline transitive license evidence
 
 - Type: requirement

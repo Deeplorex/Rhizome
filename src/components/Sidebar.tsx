@@ -237,19 +237,25 @@ export function Sidebar({
             <span>{t("全部产品")}</span>
             <em>{projects.length}</em>
           </button>
-          {projects.slice(0, 5).map((project) => (
-            <button
-              type="button"
-              key={project.id}
-              className={
-                active.view === "projects" && active.projectId === project.id ? "active" : ""
-              }
-              onClick={() => onNavigate({ view: "projects", projectId: project.id })}
-            >
-              <ProjectLogo logo={project.logo} size={20} />
-              <span className="truncate">{project.name}</span>
-            </button>
-          ))}
+          {[...projects]
+            .sort((left, right) => {
+              if (left.favorite !== right.favorite) return left.favorite ? -1 : 1;
+              return Date.parse(right.updatedAt) - Date.parse(left.updatedAt);
+            })
+            .slice(0, 3)
+            .map((project) => (
+              <button
+                type="button"
+                key={project.id}
+                className={
+                  active.view === "projects" && active.projectId === project.id ? "active" : ""
+                }
+                onClick={() => onNavigate({ view: "projects", projectId: project.id })}
+              >
+                <ProjectLogo logo={project.logo} size={20} />
+                <span className="truncate">{project.name}</span>
+              </button>
+            ))}
         </div>
       </nav>
       <div className="sidebar__foot">

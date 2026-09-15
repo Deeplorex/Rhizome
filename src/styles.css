@@ -531,6 +531,10 @@ textarea::placeholder {
   right: 4px;
 }
 
+.backup-directory input {
+  cursor: pointer;
+}
+
 .check-row,
 .favorite-check {
   display: flex;
@@ -1826,8 +1830,13 @@ textarea::placeholder {
   border-radius: 9px;
   background: var(--paper-raised);
   align-items: center;
-  grid-template-columns: 28px minmax(0, 1fr) 24px;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
   gap: 8px;
+}
+.structure-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .structure-row > span {
   display: grid;
@@ -1859,9 +1868,19 @@ textarea::placeholder {
 .dependency-card {
   position: relative;
   display: flex;
+  width: 100%;
   min-height: 54px;
-  padding-left: 38px;
+  padding: 0 0 0 38px;
+  border: 0;
   align-items: center;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.dependency-card:hover strong {
+  color: var(--forest);
 }
 .dependency-card__track {
   position: absolute;
@@ -2043,6 +2062,12 @@ textarea::placeholder {
   margin-top: 4px;
   color: var(--text-muted);
   font-size: 9px;
+}
+.settings-section > p {
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 9px;
+  line-height: 1.5;
 }
 .theme-picker {
   display: grid;

@@ -3,6 +3,7 @@ import {
   Archive,
   BookOpen,
   Fingerprint,
+  FolderOpen,
   KeyRound,
   Languages,
   LoaderCircle,
@@ -82,6 +83,16 @@ export function SettingsDialog({
   };
 
   const saveSettings = () => perform(() => onSave(draft), t("设置已保存"), "save");
+  const chooseBackupDirectory = () =>
+    perform(
+      async () => {
+        const directory = await open({ directory: true, multiple: false });
+        if (typeof directory === "string")
+          setDraft((current) => ({ ...current, autoBackupDirectory: directory }));
+      },
+      undefined,
+      "backup",
+    );
   const backup = async () => {
     const path = await save({
       title: t("导出加密备份"),
@@ -381,7 +392,7 @@ export function SettingsDialog({
                   <p>{t("备份文件已加密，恢复时需要主密码或恢复密钥。")}</p>
                 </div>
               </div>
-              <div className="settings-grid">
+              <div className="form-grid form-grid--two">
                 <label>
                   <span>{t("自动备份")}</span>
                   <select
@@ -401,29 +412,29 @@ export function SettingsDialog({
                 </label>
                 <label>
                   <span>{t("备份目录")}</span>
-                  <input
-                    readOnly
-                    value={draft.autoBackupDirectory || t("凭证库内的 backups 文件夹")}
-                  />
+                  <div className="input-with-action backup-directory">
+                    <input
+                      readOnly
+                      value={draft.autoBackupDirectory || t("凭证库内的 backups 文件夹")}
+                      title={t("点击选择备份目录")}
+                      aria-label={t("备份目录")}
+                      onClick={chooseBackupDirectory}
+                    />
+                    <button
+                      type="button"
+                      className="icon-button"
+                      aria-label={t("选择备份目录")}
+                      disabled={busy}
+                      onClick={chooseBackupDirectory}
+                    >
+                      <FolderOpen size={16} />
+                    </button>
+                  </div>
                 </label>
               </div>
               <p>{t("仅在软件运行且凭证库解锁时自动备份；到期后下次解锁补做，不安装后台服务。")}</p>
               <p>{t("备份保留历史版本，不自动删除；建议选择其他本地磁盘以防原盘损坏。")}</p>
               <div className="settings-actions">
-                <button
-                  type="button"
-                  className="secondary-button"
-                  disabled={busy}
-                  onClick={() =>
-                    perform(async () => {
-                      const directory = await open({ directory: true, multiple: false });
-                      if (typeof directory === "string")
-                        setDraft((current) => ({ ...current, autoBackupDirectory: directory }));
-                    })
-                  }
-                >
-                  {t("选择备份目录")}
-                </button>
                 <button
                   type="button"
                   className="secondary-button"

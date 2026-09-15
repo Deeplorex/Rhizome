@@ -1,4 +1,4 @@
-import type { AssetKind } from "../types";
+import type { AssetKind, Project, UsageBinding } from "../types";
 import { KIND_LABELS } from "./assetTemplates";
 import { type AppLanguage, translate } from "./i18n";
 
@@ -32,4 +32,26 @@ export function formatEnvironment(value?: string | null, language: AppLanguage =
 
 export function describeAsset(kind: AssetKind, platform: string, username: string): string {
   return [platform || KIND_LABELS[kind], username].filter(Boolean).join(" · ");
+}
+
+export function consumerPath(
+  projects: Project[],
+  binding: Pick<UsageBinding, "consumerKind" | "consumerId" | "consumerName">,
+): string {
+  const project = projects.find(
+    (candidate) =>
+      candidate.id === binding.consumerId ||
+      candidate.services.some((service) => service.id === binding.consumerId) ||
+      candidate.environments.some((environment) => environment.id === binding.consumerId),
+  );
+  if (!project) return binding.consumerName;
+  if (binding.consumerKind === "project") return project.name;
+  if (binding.consumerKind === "service") {
+    const service = project.services.find((item) => item.id === binding.consumerId);
+    return service ? [project.name, service.name].join(" / ") : binding.consumerName;
+  }
+  const environment = project.environments.find((item) => item.id === binding.consumerId);
+  if (!environment) return binding.consumerName;
+  const serviceName = project.services.find((item) => item.id === environment.serviceId)?.name;
+  return [project.name, serviceName, environment.name].filter(Boolean).join(" / ");
 }

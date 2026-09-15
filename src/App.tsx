@@ -524,6 +524,7 @@ export default function App() {
             projects={projects}
             selectedId={navigation.projectId}
             onSelect={(id) => setNavigation({ view: "projects", projectId: id })}
+            onOpenAsset={setSelectedId}
             onSave={saveProject}
             onDelete={deleteProject}
             onSaveService={saveService}

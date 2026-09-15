@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { AssetDetail } from "../types";
+import type { AssetDetail, Project, UsageBinding } from "../types";
 import { DetailPanel } from "./DetailPanel";
 
 const detail: AssetDetail = {
@@ -43,6 +44,61 @@ const registrationEmail = {
   tags: [],
   coreFields: [],
 };
+
+const projects: Project[] = [
+  {
+    id: "project-website",
+    name: "个人网站",
+    description: "",
+    repoPath: "",
+    favorite: false,
+    updatedAt: "2026-09-02T12:00:00Z",
+    services: [
+      { id: "service-sync", projectId: "project-website", name: "作品同步", description: "" },
+    ],
+    environments: [
+      {
+        id: "environment-daily",
+        projectId: "project-website",
+        serviceId: "service-sync",
+        name: "日常使用",
+        kind: "prod",
+      },
+    ],
+    bindings: [],
+  },
+];
+
+function renderDetail(
+  bindingDetail: AssetDetail,
+  props: Partial<ComponentProps<typeof DetailPanel>> = {},
+) {
+  render(
+    <DetailPanel
+      detail={bindingDetail}
+      assets={[bindingDetail.summary]}
+      projects={projects}
+      busy={false}
+      revealSeconds={15}
+      onClose={vi.fn()}
+      onShowGraph={vi.fn()}
+      onReveal={vi.fn()}
+      onCopy={vi.fn()}
+      onEdit={vi.fn()}
+      onTrash={vi.fn()}
+      onRestore={vi.fn()}
+      onPurge={vi.fn()}
+      onAddAttachment={vi.fn()}
+      onExportAttachment={vi.fn()}
+      onDeleteAttachment={vi.fn()}
+      onSaveBinding={vi.fn()}
+      onDeleteBinding={vi.fn()}
+      onSaveAssetRelation={vi.fn()}
+      onDeleteAssetRelation={vi.fn()}
+      {...props}
+    />,
+  );
+}
 
 describe("asset detail", () => {
   afterEach(() => vi.useRealTimers());
@@ -122,6 +178,42 @@ describe("asset detail", () => {
     await act(async () => vi.advanceTimersByTimeAsync(15_000));
     expect(screen.queryByText("test-secret")).not.toBeInTheDocument();
     expect(screen.getByText("••••••••••••")).toBeInTheDocument();
+  });
+
+  it("shows the full product path in the usage list", () => {
+    const bindings: UsageBinding[] = [
+      {
+        id: "binding-service",
+        assetId: "asset-1",
+        assetTitle: "OpenAI API",
+        consumerKind: "service",
+        consumerId: "service-sync",
+        consumerName: "作品同步",
+        purpose: "读取公开仓库",
+        configKey: "GITHUB_TOKEN",
+        environment: "prod",
+        notes: "",
+        lastVerifiedAt: null,
+      },
+      {
+        id: "binding-environment",
+        assetId: "asset-1",
+        assetTitle: "OpenAI API",
+        consumerKind: "environment",
+        consumerId: "environment-daily",
+        consumerName: "日常使用",
+        purpose: "",
+        configKey: "",
+        environment: "",
+        notes: "",
+        lastVerifiedAt: null,
+      },
+    ];
+    renderDetail({ ...detail, bindings });
+
+    expect(screen.getByText("个人网站 / 作品同步")).toBeInTheDocument();
+    expect(screen.getByText("个人网站 / 作品同步 / 日常使用")).toBeInTheDocument();
+    expect(screen.queryByText("作品同步")).not.toBeInTheDocument();
   });
 
   it("creates an incoming credential relationship with an explicit type", async () => {

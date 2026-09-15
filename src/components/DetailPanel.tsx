@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { KIND_LABELS } from "../lib/assetTemplates";
-import { formatBytes, formatDate, formatEnvironment } from "../lib/format";
+import { consumerPath, formatBytes, formatDate, formatEnvironment } from "../lib/format";
 import { useI18n } from "../lib/i18n";
 import type {
   AssetDetail,
@@ -537,7 +537,7 @@ export function DetailPanel({
                       <GitBranch size={16} />
                     </span>
                     <span className="binding-row__copy">
-                      <strong>{binding.consumerName}</strong>
+                      <strong>{consumerPath(projects, binding)}</strong>
                       <small>
                         {[
                           binding.purpose,

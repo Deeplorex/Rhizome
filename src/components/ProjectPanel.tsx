@@ -1,6 +1,6 @@
 import { Boxes, Component, GitBranch, Layers3, Pencil, Plus, Star, Trash2, X } from "lucide-react";
 import { type FormEvent, useEffect, useId, useState } from "react";
-import { formatEnvironment } from "../lib/format";
+import { consumerPath, formatEnvironment } from "../lib/format";
 import { useI18n } from "../lib/i18n";
 import type { EnvironmentInput, Project, ProjectInput, ServiceInput } from "../types";
 import { ProjectLogo } from "./ProjectLogo";
@@ -9,6 +9,7 @@ interface ProjectPanelProps {
   projects: Project[];
   selectedId?: string;
   onSelect: (id: string) => void;
+  onOpenAsset: (id: string) => void;
   onSave: (input: ProjectInput) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onSaveService: (input: ServiceInput) => Promise<void>;
@@ -28,6 +29,7 @@ export function ProjectPanel({
   projects,
   selectedId,
   onSelect,
+  onOpenAsset,
   onSave,
   onDelete,
   onSaveService,
@@ -79,6 +81,7 @@ export function ProjectPanel({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [structureForm, setStructureForm] = useState<"service" | "environment" | null>(null);
+  const [structureServiceId, setStructureServiceId] = useState<string | null>(null);
   const [structureName, setStructureName] = useState("");
   const [structureDescription, setStructureDescription] = useState("");
   const [environmentKind, setEnvironmentKind] = useState("prod");
@@ -124,6 +127,7 @@ export function ProjectPanel({
     try {
       if (structureForm === "service") {
         await onSaveService({
+          id: structureServiceId,
           projectId: selected.id,
           name: structureName,
           description: structureDescription,
@@ -139,6 +143,7 @@ export function ProjectPanel({
       setStructureName("");
       setStructureDescription("");
       setEnvironmentService("");
+      setStructureServiceId(null);
       setStructureForm(null);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : String(reason));
@@ -229,6 +234,26 @@ export function ProjectPanel({
               <div className="project-actions">
                 <button
                   type="button"
+                  className="icon-button"
+                  onClick={() =>
+                    void attempt(() =>
+                      onSave({
+                        id: selected.id,
+                        name: selected.name,
+                        description: selected.description,
+                        logo: selected.logo,
+                        repoPath: selected.repoPath,
+                        favorite: !selected.favorite,
+                      }),
+                    )
+                  }
+                  aria-label={selected.favorite ? t("取消产品星标") : t("星标产品")}
+                  disabled={saving || readingLogo}
+                >
+                  <Star size={16} fill={selected.favorite ? "currentColor" : "none"} />
+                </button>
+                <button
+                  type="button"
                   className="secondary-button"
                   onClick={() => openProduct(selected)}
                   disabled={saving || readingLogo}
@@ -274,7 +299,10 @@ export function ProjectPanel({
                   <button
                     type="button"
                     className="text-button"
-                    onClick={() => setStructureForm("service")}
+                    onClick={() => {
+                      setStructureServiceId(null);
+                      setStructureForm("service");
+                    }}
                   >
                     <Plus size={15} />
                     {t("添加")}
@@ -295,23 +323,39 @@ export function ProjectPanel({
                           <strong>{service.name}</strong>
                           <small>{service.description || t("未填写说明")}</small>
                         </div>
-                        <button
-                          type="button"
-                          className="bare-danger"
-                          aria-label={t("删除产品组成 {name}", { name: service.name })}
-                          onClick={() => {
-                            if (
-                              window.confirm(
-                                t("删除产品组成“{name}”及其环境和关联？", {
-                                  name: service.name,
-                                }),
+                        <div className="structure-row__actions">
+                          <button
+                            type="button"
+                            className="text-button"
+                            aria-label={t("编辑产品组成 {name}", { name: service.name })}
+                            onClick={() => {
+                              setStructureServiceId(service.id);
+                              setStructureName(service.name);
+                              setStructureDescription(service.description);
+                              setStructureForm("service");
+                            }}
+                            disabled={saving || readingLogo}
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            className="bare-danger"
+                            aria-label={t("删除产品组成 {name}", { name: service.name })}
+                            onClick={() => {
+                              if (
+                                window.confirm(
+                                  t("删除产品组成“{name}”及其环境和关联？", {
+                                    name: service.name,
+                                  }),
+                                )
                               )
-                            )
-                              void attempt(() => onDeleteService(service.id));
-                          }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                                void attempt(() => onDeleteService(service.id));
+                            }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -349,23 +393,25 @@ export function ProjectPanel({
                             )?.name || t("产品级")}
                           </small>
                         </div>
-                        <button
-                          type="button"
-                          className="bare-danger"
-                          aria-label={t("删除环境 {name}", { name: environment.name })}
-                          onClick={() => {
-                            if (
-                              window.confirm(
-                                t("删除环境“{name}”及其关联？", {
-                                  name: environment.name,
-                                }),
+                        <div className="structure-row__actions">
+                          <button
+                            type="button"
+                            className="bare-danger"
+                            aria-label={t("删除环境 {name}", { name: environment.name })}
+                            onClick={() => {
+                              if (
+                                window.confirm(
+                                  t("删除环境“{name}”及其关联？", {
+                                    name: environment.name,
+                                  }),
+                                )
                               )
-                            )
-                              void attempt(() => onDeleteEnvironment(environment.id));
-                          }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                                void attempt(() => onDeleteEnvironment(environment.id));
+                            }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -386,14 +432,20 @@ export function ProjectPanel({
                 </div>
               ) : (
                 selected.bindings.map((binding) => (
-                  <div className="dependency-card" key={binding.id}>
+                  <button
+                    type="button"
+                    className="dependency-card"
+                    key={binding.id}
+                    onClick={() => onOpenAsset(binding.assetId)}
+                    aria-label={t("查看凭证 {title} 详情", { title: binding.assetTitle })}
+                  >
                     <span className="dependency-card__track" />
                     <span className="dependency-card__dot" />
                     <div>
                       <strong>{binding.assetTitle}</strong>
                       <small>
                         {[
-                          binding.consumerName,
+                          consumerPath(projects, binding),
                           binding.purpose,
                           binding.configKey,
                           formatEnvironment(binding.environment, language),
@@ -402,7 +454,7 @@ export function ProjectPanel({
                           .join(" · ")}
                       </small>
                     </div>
-                  </div>
+                  </button>
                 ))
               )}
             </section>
@@ -516,13 +568,20 @@ export function ProjectPanel({
             <header className="modal-head">
               <div>
                 <h2 id={structureTitleId}>
-                  {structureForm === "service" ? t("添加产品组成") : t("添加部署环境")}
+                  {structureForm === "environment"
+                    ? t("添加部署环境")
+                    : structureServiceId
+                      ? t("编辑产品组成")
+                      : t("添加产品组成")}
                 </h2>
               </div>
               <button
                 type="button"
                 className="icon-button"
-                onClick={() => setStructureForm(null)}
+                onClick={() => {
+                  setStructureForm(null);
+                  setStructureServiceId(null);
+                }}
                 aria-label={t("关闭结构编辑")}
                 disabled={saving || readingLogo}
               >
@@ -593,7 +652,10 @@ export function ProjectPanel({
               <button
                 type="button"
                 className="secondary-button"
-                onClick={() => setStructureForm(null)}
+                onClick={() => {
+                  setStructureForm(null);
+                  setStructureServiceId(null);
+                }}
                 disabled={saving || readingLogo}
               >
                 {t("取消")}
