@@ -6,7 +6,7 @@
   "build": {
     "beforeDevCommand": "corepack pnpm dev",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "corepack pnpm build",
+    "beforeBuildCommand": "pnpm build",
     "frontendDist": "../dist"
   },
   "app": {
@@ -31,7 +31,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "msi"],
+    "targets": ["nsis", "msi", "dmg"],
     "createUpdaterArtifacts": false,
     "resources": {
       "../LICENSE": "legal/LICENSE",
@@ -61,6 +61,13 @@
       "wix": {
         "language": "zh-CN"
       }
+    },
+    "macOS": {
+      "minimumSystemVersion": "13.0",
+      "frameworks": [],
+      "signingIdentity": "-",
+      "hardenedRuntime": true,
+      "entitlements": null
     }
   }
 }
