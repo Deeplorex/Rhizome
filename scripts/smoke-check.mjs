@@ -15,3 +15,7 @@ const config = JSON.parse(readFileSync("src-tauri/tauri.conf.json", "utf8"));
 if (config.bundle.windows.wix?.language !== "zh-CN") {
   throw new Error("Chinese product names require the zh-CN MSI language/code page");
 }
+const mainWindow = config.app?.windows?.[0];
+if (mainWindow?.maximized !== true) {
+  throw new Error("The main window must start maximized");
+}

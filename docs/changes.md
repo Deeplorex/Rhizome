@@ -1,5 +1,11 @@
 # Product changes
 
+## 2026-09-16 — Main window starts maximized
+
+- Type: `requirement`
+- The main window now opens maximized on launch instead of a fixed 1440×920 centered frame; the configured size and centering remain as the restore size.
+- Tests: `scripts/smoke-check.mjs`.
+
 ## 2026-09-15 — Settings hint text matches the muted hint style
 
 - Type: `bugfix`
