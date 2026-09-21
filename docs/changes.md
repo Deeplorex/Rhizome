@@ -1,5 +1,11 @@
 # Product changes
 
+## 2026-09-21 — Quality gate excludes the HarmonyOS submodule
+
+- Type: `maintenance`
+- Biome formatting/linting and vitest test discovery now skip `Rhizome-Ark`, a separate nested repository with its own build toolchain; its hvigor build caches and bundled hypium files broke the root `pnpm quality` format check and test run after the submodule was added.
+- Verified with the full `corepack pnpm quality` run. Contributor tooling only; no application behavior changes.
+
 ## 2026-09-16 — Main window starts maximized
 
 - Type: `requirement`

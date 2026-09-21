@@ -5,6 +5,7 @@
       "**",
       "!dist",
       "!node_modules",
+      "!Rhizome-Ark",
       "!src-tauri/gen",
       "!src-tauri/target",
       "!docs/legal/licenses",
