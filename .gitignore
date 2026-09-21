@@ -21,3 +21,5 @@ system-key.bin
 .env
 .DS_Store
 Thumbs.db
+.zcode/plans/
+.zcode/workflow-drafts/
