@@ -5,7 +5,7 @@
     "pnpm-lock.yaml": "1c47f83fbb901323135d89d7da2efde780be62757f55e1eec7e7fd5e4e0a1a00",
     "src-tauri/Cargo.lock": "f11a51bf902178a38d450864104b9a0330960632bfe05d2f862601cdb1d9d419",
     "src-tauri/Cargo.toml": "484afe5fdb1c2ea5599213a1d6bc1e3e2b8da030934bb8d997788c9b6cb74e9d",
-    "package.json": "887d4c19c9cd66f91be95392c48d1d6fb9a192028d27a3930f79b0c02c0aa1d9",
+    "package.json": "7af49e94e56b79c33f227ea0c9ca1f40320a673bcca9c2cdf6f326ad7151dab1",
     "src-tauri/tauri.conf.json": "d5377efc5d0ef26ef5a232513427552c5ded59e2cca2d32f1e6892ef7e971031"
   },
   "gaps": [],

@@ -17,6 +17,14 @@ Restart the terminal after the first tool installation so user-level `CARGO_HOME
 - `pnpm deploy:preflight` — debug native build without an installer bundle.
 - `pnpm tauri build` — local native package.
 
+## Commit quality gate
+
+`pnpm install` installs `.githooks/pre-commit` through `prepare`. Existing checkouts and installs using `--ignore-scripts` can enable it with `corepack pnpm hooks:install`. Source archives without Git metadata skip installation. Custom `core.hooksPath` settings are preserved and require manual integration.
+
+Every commit runs `pnpm quality:commit`: hook regression tests, frontend formatting/lint/types/tests, Rust formatting/Clippy/tests (including migrations), contracts, legal inventory and change records. Any failure or missing tool blocks the commit. No network audit or release packaging runs. The Git client needs Node, Corepack and the Rust/native toolchain on its PATH.
+
+Checks use the working tree. Tracked unstaged edits block the commit; stage or stash them yourself first. The hook never stages or stashes files. Untracked files follow normal checker discovery rules. The separate `Rhizome-Ark` submodule is outside this gate. Local hooks can be bypassed using Git options and are not server-side enforcement. Run `pnpm test:hooks` for isolated regression tests; reserve `pnpm quality` for initialization or release checks.
+
 ## Data changes
 
 Add numbered SQL files under `src-tauri/migrations`, include them in the migration registry, test empty and current vault upgrades, and document the change in `docs/changes.md`. Never edit an already released migration.

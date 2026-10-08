@@ -11,6 +11,10 @@
     "pnpm": "11.24.0"
   },
   "scripts": {
+    "prepare": "node scripts/install-hooks.mjs",
+    "hooks:install": "node scripts/install-hooks.mjs",
+    "test:hooks": "node --test scripts/pre-commit.node-test.mjs",
+    "quality:commit": "corepack pnpm test:hooks && corepack pnpm format:check && corepack pnpm quality:fast && corepack pnpm format:rust:check && corepack pnpm lint:rust && corepack pnpm test:rust && corepack pnpm contract:check && corepack pnpm legal:check && corepack pnpm change:check",
     "dev": "vite",
     "tauri": "tauri",
     "build": "tsc -b && vite build",

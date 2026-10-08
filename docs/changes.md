@@ -1,5 +1,13 @@
 # Product changes
 
+## 2026-10-08 — Install a blocking commit quality gate
+
+- Type: `maintenance`
+- Install the versioned pre-commit hook during dependency setup, with an explicit installer for existing checkouts; preserve custom hook configurations.
+- Block commits on frontend/Rust check failures, missing tools or tracked unstaged edits. Include contract, legal and change-record checks without release packaging or network audits. No third-party dependencies added.
+- Refresh the package-manifest evidence digest after verifying that dependency versions and license metadata are unchanged.
+- Tests: `scripts/pre-commit.node-test.mjs` covers success, failures, unavailable tools, unstaged edits, repeat installation and custom hook preservation.
+
 ## 2026-10-08 — Platform logos use platform identity rather than login accounts
 
 - Type: `bugfix`

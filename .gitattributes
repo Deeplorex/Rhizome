@@ -1,4 +1,5 @@
 # Preserve upstream license/source evidence byte-for-byte across checkouts.
+.githooks/* text eol=lf
 docs/legal/licenses/** -text
 docs/legal/upstream/** -text
 docs/legal/sources/** -text
