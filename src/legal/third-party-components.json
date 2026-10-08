@@ -7632,6 +7632,24 @@
       "scope": "production-dependency",
       "source": "https://registry.npmjs.org/simple-icons/-/simple-icons-16.29.0.tgz",
       "id": "npm/simple-icons@16.29.0",
+      "bundledResources": [
+        {
+          "path": "icons/figma.svg",
+          "version": "16.29.0",
+          "source": "https://registry.npmjs.org/simple-icons/-/simple-icons-16.29.0.tgz#icons/figma.svg",
+          "upstreamArtwork": "https://www.figma.com/using-the-figma-brand/",
+          "license": "CC0-1.0",
+          "attribution": "Figma icon from Simple Icons. CC0 covers the Simple Icons contribution; trademark rights are not granted. No separate icon license is specified in this version's metadata."
+        },
+        {
+          "path": "icons/xiaohongshu.svg",
+          "version": "16.29.0",
+          "source": "https://registry.npmjs.org/simple-icons/-/simple-icons-16.29.0.tgz#icons/xiaohongshu.svg",
+          "upstreamArtwork": "https://pro.xiaohongshu.com",
+          "license": "CC0-1.0",
+          "attribution": "Xiaohongshu icon from Simple Icons. CC0 covers the Simple Icons contribution; trademark rights are not granted. No separate icon license is specified in this version's metadata."
+        }
+      ],
       "licenseFiles": [
         {
           "path": "docs/legal/licenses/npm_simple-icons_16.29.0/0-unlicense.svg",

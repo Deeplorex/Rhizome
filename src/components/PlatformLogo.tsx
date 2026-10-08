@@ -13,6 +13,7 @@ import {
   siDocker,
   siDropbox,
   siFacebook,
+  siFigma,
   siGithub,
   siGitlab,
   siGoogle,
@@ -33,9 +34,10 @@ import {
   siVercel,
   siWechat,
   siX,
+  siXiaohongshu,
 } from "simple-icons";
-import type { AssetKind, AssetListField } from "../types";
 import { useI18n } from "../lib/i18n";
+import type { AssetKind, AssetListField } from "../types";
 
 type CustomMark = "openai" | "aws" | "azure" | "oracle" | "tencent" | "slack" | "linkedin";
 
@@ -137,7 +139,14 @@ const identities: PlatformIdentity[] = [
   { key: "apple", label: "Apple", aliases: ["apple", "icloud", "苹果"], icon: siApple },
   { key: "facebook", label: "Facebook", aliases: ["facebook", "meta"], icon: siFacebook },
   { key: "instagram", label: "Instagram", aliases: ["instagram"], icon: siInstagram },
-  { key: "x", label: "X", aliases: ["twitter", "x.com"], icon: siX },
+  { key: "figma", label: "Figma", aliases: ["figma"], icon: siFigma },
+  { key: "x", label: "X", aliases: ["x", "twitter", "x.com"], icon: siX },
+  {
+    key: "xiaohongshu",
+    label: "小红书",
+    aliases: ["小红书", "xiaohongshu"],
+    icon: siXiaohongshu,
+  },
   { key: "dropbox", label: "Dropbox", aliases: ["dropbox"], icon: siDropbox },
   { key: "notion", label: "Notion", aliases: ["notion"], icon: siNotion },
   {
@@ -170,12 +179,42 @@ export function resolvePlatformIdentity(
   title = "",
   coreFields: AssetListField[] = [],
 ): PlatformIdentity | undefined {
-  const searchable = [platform, title, ...coreFields.flatMap((field) => [field.label, field.value])]
-    .join(" ")
-    .toLocaleLowerCase();
-  return identities.find((identity) =>
-    identity.aliases.some((alias) => searchable.includes(alias.toLocaleLowerCase())),
-  );
+  // Login identities and arbitrary field labels do not identify the credential's platform.
+  const sources = [
+    platform,
+    title,
+    ...coreFields
+      .filter(
+        (field) => !field.sensitive && ["engine", "provider", "login_url"].includes(field.key),
+      )
+      .map((field) => field.value),
+  ];
+  for (const source of sources) {
+    const searchable = source
+      .toLocaleLowerCase()
+      .replace(/[\w.+-]+@[\w.-]+/g, " ")
+      .trim();
+    if (!searchable) continue;
+    const exact = identities.find((identity) => identity.aliases.includes(searchable));
+    if (exact) return exact;
+    const match = identities.find((identity) =>
+      identity.aliases.some((alias) => {
+        // Single-letter brands require an exact match; domains must not match a suffix.
+        if (alias.length === 1) return false;
+        if (!/[a-z0-9]/i.test(alias)) return searchable.includes(alias);
+        const escaped = alias.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const startBoundary = alias.includes(".") ? "[^a-z0-9_-]" : "[^a-z0-9_]";
+        const endBoundary = alias.endsWith("-")
+          ? ""
+          : alias.includes(".")
+            ? "($|[^a-z0-9_.-])"
+            : "($|[^a-z0-9_])";
+        return new RegExp(`(^|${startBoundary})${escaped}${endBoundary}`, "i").test(searchable);
+      }),
+    );
+    if (match) return match;
+  }
+  return undefined;
 }
 
 function CustomLogo({ mark }: { mark: CustomMark }) {

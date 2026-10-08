@@ -370,6 +370,10 @@ MPL package sources are supplied unchanged in docs/legal/sources. See docs/legal
 | vite | 8.2.2 | MIT | build-tool-generated-helpers-or-installer | https://vite.dev |
 | zustand | 4.5.7 | MIT | production-dependency | https://github.com/pmndrs/zustand |
 
+## Platform icon additions (2026-10-08)
+
+The Figma and Xiaohongshu marks are bundled from Simple Icons 16.29.0 (`icons/figma.svg` and `icons/xiaohongshu.svg` in https://registry.npmjs.org/simple-icons/-/simple-icons-16.29.0.tgz). Their recorded artwork sources are https://www.figma.com/using-the-figma-brand/ and https://pro.xiaohongshu.com. The package's CC0-1.0 text remains bundled at `docs/legal/licenses/npm_simple-icons_16.29.0/1-LICENSE.md`; no attribution is required by that dedication. The version's metadata specifies no separate license for these two icons. As the upstream disclaimer explains, the package dedication does not clear underlying brand rights, and CC0 does not grant trademark rights. These marks identify user-selected platforms and do not imply affiliation or endorsement; this entry is not a complete brand-rights clearance.
+
 ## Collection gaps
 
 No missing component license files in the collected graph. This is not a complete legal conclusion; see the release review.

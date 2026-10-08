@@ -1,5 +1,13 @@
 # Product changes
 
+## 2026-10-08 — Platform logos use platform identity rather than login accounts
+
+- Type: `bugfix`
+- Prioritize the platform field, then the title, then non-sensitive database-engine, cloud-provider and login-URL fields. Exclude usernames, email addresses, arbitrary field labels and sensitive fields from brand detection.
+- Match English aliases at token boundaries and domain aliases at domain boundaries so unrelated names and domains ending in `x.com` no longer appear as X. Recognize the exact platform name X.
+- Add bundled Figma and Xiaohongshu marks from the existing Simple Icons 16.29.0 dependency and record their provenance in the legal inventory and notices; no dependency version changes.
+- Tests: `src/components/PlatformLogo.test.tsx` covers email interference, source precedence, alias boundaries, safe field fallbacks and rendered brand icons.
+
 ## 2026-09-21 — Quality gate excludes the HarmonyOS submodule
 
 - Type: `maintenance`
